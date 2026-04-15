@@ -53,13 +53,8 @@ export function Header({ company }: { company: PublishedCompanyProfile }) {
                 initials
               )}
             </span>
-            <span className="block">
-              <span className="block font-heading text-lg tracking-[0.12em]">
-                {company.companyName}
-              </span>
-              <span className="block text-xs uppercase tracking-[0.24em] text-[var(--muted)]">
-                {dictionary.brandSubtitle}
-              </span>
+            <span className="block font-heading text-lg leading-none tracking-[0.12em]">
+              {company.companyName}
             </span>
           </Link>
 
