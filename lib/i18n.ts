@@ -2,10 +2,38 @@ import { absoluteUrl } from "@/lib/site";
 
 export const i18nConfig = {
   defaultLocale: "en",
-  locales: ["en", "zh-CN"],
+  locales: ["en", "zh-CN", "es", "ru", "fr", "ar"],
   localePrefixMap: {
     en: "",
     "zh-CN": "/zh-cn",
+    es: "/es",
+    ru: "/ru",
+    fr: "/fr",
+    ar: "/ar",
+  },
+  localeLabels: {
+    en: "EN",
+    "zh-CN": "中文",
+    es: "ES",
+    ru: "RU",
+    fr: "FR",
+    ar: "AR",
+  },
+  htmlLangMap: {
+    en: "en",
+    "zh-CN": "zh-CN",
+    es: "es",
+    ru: "ru",
+    fr: "fr",
+    ar: "ar",
+  },
+  textDirectionMap: {
+    en: "ltr",
+    "zh-CN": "ltr",
+    es: "ltr",
+    ru: "ltr",
+    fr: "ltr",
+    ar: "rtl",
   },
 } as const;
 
@@ -30,11 +58,17 @@ export function normalizePathname(pathname = "/") {
 export function getLocaleFromPathname(pathname = "/"): Locale {
   const normalizedPathname = normalizePathname(pathname).toLowerCase();
 
-  if (
-    normalizedPathname === i18nConfig.localePrefixMap["zh-CN"] ||
-    normalizedPathname.startsWith(`${i18nConfig.localePrefixMap["zh-CN"]}/`)
-  ) {
-    return "zh-CN";
+  const matchedLocale = i18nConfig.locales.find((locale) => {
+    const prefix = i18nConfig.localePrefixMap[locale].toLowerCase();
+
+    return (
+      prefix &&
+      (normalizedPathname === prefix || normalizedPathname.startsWith(`${prefix}/`))
+    );
+  });
+
+  if (matchedLocale) {
+    return matchedLocale;
   }
 
   return i18nConfig.defaultLocale;
@@ -42,17 +76,20 @@ export function getLocaleFromPathname(pathname = "/"): Locale {
 
 export function stripLocalePrefix(pathname = "/") {
   const normalizedPathname = normalizePathname(pathname);
-  const zhPrefix = i18nConfig.localePrefixMap["zh-CN"];
+  const matchedPrefix = i18nConfig.locales
+    .map((locale) => i18nConfig.localePrefixMap[locale])
+    .filter(Boolean)
+    .find((prefix) => normalizedPathname === prefix || normalizedPathname.startsWith(`${prefix}/`));
 
-  if (normalizedPathname === zhPrefix) {
+  if (!matchedPrefix) {
+    return normalizedPathname;
+  }
+
+  if (normalizedPathname === matchedPrefix) {
     return "/";
   }
 
-  if (normalizedPathname.startsWith(`${zhPrefix}/`)) {
-    return normalizedPathname.slice(zhPrefix.length) || "/";
-  }
-
-  return normalizedPathname;
+  return normalizedPathname.slice(matchedPrefix.length) || "/";
 }
 
 export function withLocalePath(locale: Locale, pathname = "/") {
@@ -72,8 +109,12 @@ export function buildLanguageAlternates(pathname: string) {
   return {
     canonical: absoluteUrl(withLocalePath(i18nConfig.defaultLocale, basePath)),
     languages: {
-      en: absoluteUrl(withLocalePath("en", basePath)),
-      "zh-CN": absoluteUrl(withLocalePath("zh-CN", basePath)),
+      ...Object.fromEntries(
+        i18nConfig.locales.map((locale) => [
+          locale,
+          absoluteUrl(withLocalePath(locale, basePath)),
+        ]),
+      ),
       "x-default": absoluteUrl(withLocalePath(i18nConfig.defaultLocale, basePath)),
     },
   };
@@ -86,9 +127,21 @@ export function formatLocalizedDate(locale: Locale, value: string) {
     return value;
   }
 
-  return new Intl.DateTimeFormat(locale === "zh-CN" ? "zh-CN" : "en-US", {
+  return new Intl.DateTimeFormat(i18nConfig.htmlLangMap[locale], {
     year: "numeric",
-    month: locale === "zh-CN" ? "long" : "short",
+    month: locale === "en" ? "short" : "long",
     day: "numeric",
   }).format(date);
+}
+
+export function getHtmlLang(locale: Locale) {
+  return i18nConfig.htmlLangMap[locale];
+}
+
+export function getTextDirection(locale: Locale) {
+  return i18nConfig.textDirectionMap[locale];
+}
+
+export function isArabicLocale(locale: Locale) {
+  return locale === "ar";
 }

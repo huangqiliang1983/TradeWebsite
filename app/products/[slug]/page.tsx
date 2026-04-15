@@ -13,6 +13,7 @@ import { InquiryFormCard } from "@/features/marketing/components/InquiryFormCard
 import { PageHero } from "@/features/marketing/components/PageHero";
 import { SectionHeading } from "@/features/marketing/components/SectionHeading";
 import { getMarketingDictionary } from "@/features/marketing/copy";
+import { getHomeLabel } from "@/features/marketing/localized-text";
 import {
   getPublishedProductBySlug,
   getRedirectForPath,
@@ -64,6 +65,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
   const dictionary = getMarketingDictionary(locale);
   const homeHref = withLocalePath(locale, "/");
   const productsHref = withLocalePath(locale, "/products");
+  const homeLabel = getHomeLabel(locale);
   const { slug } = await params;
   const product = await getPublishedProductBySlug(slug);
 
@@ -86,7 +88,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     <>
       <StructuredData
         data={breadcrumbSchema([
-          { name: locale === "zh-CN" ? "首页" : "Home", path: homeHref },
+          { name: homeLabel, path: homeHref },
           { name: dictionary.products.eyebrow, path: productsHref },
           { name: localizedProduct.name, path: withLocalePath(locale, `/products/${localizedProduct.slug}`) },
         ])}
@@ -114,7 +116,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
         breadcrumbs={
           <Breadcrumbs
             items={[
-              { label: locale === "zh-CN" ? "首页" : "Home", href: homeHref },
+              { label: homeLabel, href: homeHref },
               { label: dictionary.products.eyebrow, href: productsHref },
               { label: localizedProduct.name },
             ]}

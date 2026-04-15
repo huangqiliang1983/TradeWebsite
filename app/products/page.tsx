@@ -9,6 +9,12 @@ import { IllustrationPanel } from "@/features/marketing/components/IllustrationP
 import { PageHero } from "@/features/marketing/components/PageHero";
 import { SectionHeading } from "@/features/marketing/components/SectionHeading";
 import { getMarketingDictionary } from "@/features/marketing/copy";
+import {
+  getHomeLabel,
+  localizedMeta,
+  localizedVisualText,
+  pickLocalizedText,
+} from "@/features/marketing/localized-text";
 import { getPublishedProducts } from "@/features/marketing/public-content";
 import { localizeProduct } from "@/features/marketing/translations";
 import { withLocalePath } from "@/lib/i18n";
@@ -22,11 +28,8 @@ export async function generateMetadata() {
   const locale = await getRequestLocale();
 
   return buildPageMetadata({
-    title: locale === "zh-CN" ? "产品列表模板" : "Product Catalog Templates",
-    description:
-      locale === "zh-CN"
-        ? "浏览适合 B2B SEO、参数展示、FAQ 和报价 CTA 的响应式产品列表模板。"
-        : "Browse responsive B2B product list templates with SEO-ready descriptions, specifications, FAQs, and quote CTAs.",
+    title: pickLocalizedText(locale, localizedMeta.productsTitle),
+    description: pickLocalizedText(locale, localizedMeta.productsDescription),
     path: "/products",
     locale,
     keywords: ["product catalog", "B2B product page", "OEM product template"],
@@ -38,6 +41,7 @@ export default async function ProductsPage() {
   const dictionary = getMarketingDictionary(locale);
   const homeHref = withLocalePath(locale, "/");
   const productsHref = withLocalePath(locale, "/products");
+  const homeLabel = getHomeLabel(locale);
   const products = (await getPublishedProducts()).map((product) =>
     localizeProduct(locale, product),
   );
@@ -46,7 +50,7 @@ export default async function ProductsPage() {
     <>
       <StructuredData
         data={breadcrumbSchema([
-          { name: locale === "zh-CN" ? "首页" : "Home", path: homeHref },
+          { name: homeLabel, path: homeHref },
           { name: dictionary.products.eyebrow, path: productsHref },
         ])}
       />
@@ -56,7 +60,7 @@ export default async function ProductsPage() {
         title={dictionary.products.title}
         description={dictionary.products.description}
         breadcrumbs={
-          <Breadcrumbs items={[{ label: locale === "zh-CN" ? "首页" : "Home", href: homeHref }, { label: dictionary.products.eyebrow }]} />
+          <Breadcrumbs items={[{ label: homeLabel, href: homeHref }, { label: dictionary.products.eyebrow }]} />
         }
         actions={
           <CTAGroup
@@ -68,7 +72,7 @@ export default async function ProductsPage() {
         aside={
           <IllustrationPanel
             src="/brand/product-blueprint.svg"
-            alt={locale === "zh-CN" ? "带参数层级和报价节点的产品规划示意图" : "Illustration of product planning with specification layers and quote checkpoints"}
+            alt={pickLocalizedText(locale, localizedVisualText.productPlanningAlt)}
             title={dictionary.products.asideTitle}
             description={dictionary.products.asideDescription}
           />

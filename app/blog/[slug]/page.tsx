@@ -12,6 +12,7 @@ import { PageHero } from "@/features/marketing/components/PageHero";
 import { SectionHeading } from "@/features/marketing/components/SectionHeading";
 import { ArticleSections } from "@/features/marketing/components/ArticleSections";
 import { getMarketingDictionary } from "@/features/marketing/copy";
+import { getHomeLabel } from "@/features/marketing/localized-text";
 import {
   getPublishedBlogPostBySlug,
   getPublishedBlogPosts,
@@ -65,6 +66,7 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
   const dictionary = getMarketingDictionary(locale);
   const homeHref = withLocalePath(locale, "/");
   const blogHref = withLocalePath(locale, "/blog");
+  const homeLabel = getHomeLabel(locale);
   const { slug } = await params;
   const [post, allPosts] = await Promise.all([
     getPublishedBlogPostBySlug(slug),
@@ -95,7 +97,7 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
     <>
       <StructuredData
         data={breadcrumbSchema([
-          { name: locale === "zh-CN" ? "首页" : "Home", path: homeHref },
+          { name: homeLabel, path: homeHref },
           { name: dictionary.blog.eyebrow, path: blogHref },
           { name: localizedPost.title, path: withLocalePath(locale, `/blog/${localizedPost.slug}`) },
         ])}
@@ -122,7 +124,7 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
         breadcrumbs={
           <Breadcrumbs
             items={[
-              { label: locale === "zh-CN" ? "首页" : "Home", href: homeHref },
+              { label: homeLabel, href: homeHref },
               { label: dictionary.blog.eyebrow, href: blogHref },
               { label: localizedPost.title },
             ]}

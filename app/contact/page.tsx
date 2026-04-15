@@ -11,6 +11,12 @@ import { InquiryFormCard } from "@/features/marketing/components/InquiryFormCard
 import { PageHero } from "@/features/marketing/components/PageHero";
 import { SectionHeading } from "@/features/marketing/components/SectionHeading";
 import { getMarketingDictionary } from "@/features/marketing/copy";
+import {
+  getHomeLabel,
+  localizedMeta,
+  localizedVisualText,
+  pickLocalizedText,
+} from "@/features/marketing/localized-text";
 import { getPublishedCompanyProfile } from "@/features/marketing/public-content";
 import { localizeCompany } from "@/features/marketing/translations";
 import { withLocalePath } from "@/lib/i18n";
@@ -24,11 +30,8 @@ export async function generateMetadata() {
   const locale = await getRequestLocale();
 
   return buildPageMetadata({
-    title: locale === "zh-CN" ? "联系我们的销售团队" : "Contact Our Sales Team",
-    description:
-      locale === "zh-CN"
-        ? "通过这个响应式联系页获取报价、联系销售，或使用 WhatsApp 与邮箱快速沟通。"
-        : "Request a quote, contact sales, or reach our team on WhatsApp and email using this responsive B2B contact page.",
+    title: pickLocalizedText(locale, localizedMeta.contactTitle),
+    description: pickLocalizedText(locale, localizedMeta.contactDescription),
     path: "/contact",
     locale,
     keywords: ["contact supplier", "request a quote", "B2B inquiry page"],
@@ -41,6 +44,7 @@ export default async function ContactPage() {
   const company = localizeCompany(locale, await getPublishedCompanyProfile());
   const homeHref = withLocalePath(locale, "/");
   const contactHref = withLocalePath(locale, "/contact");
+  const homeLabel = getHomeLabel(locale);
   const channels = [
     {
       title: dictionary.contact.email,
@@ -63,7 +67,7 @@ export default async function ContactPage() {
     <>
       <StructuredData
         data={breadcrumbSchema([
-          { name: locale === "zh-CN" ? "首页" : "Home", path: homeHref },
+          { name: homeLabel, path: homeHref },
           { name: dictionary.contact.eyebrow, path: contactHref },
         ])}
       />
@@ -72,12 +76,12 @@ export default async function ContactPage() {
         eyebrow={dictionary.contact.eyebrow}
         title={dictionary.contact.title}
         description={dictionary.contact.description}
-        breadcrumbs={<Breadcrumbs items={[{ label: locale === "zh-CN" ? "首页" : "Home", href: homeHref }, { label: dictionary.contact.eyebrow }]} />}
+        breadcrumbs={<Breadcrumbs items={[{ label: homeLabel, href: homeHref }, { label: dictionary.contact.eyebrow }]} />}
         actions={<CTAGroup locale={locale} />}
         aside={
           <IllustrationPanel
             src="/brand/product-blueprint.svg"
-            alt={locale === "zh-CN" ? "带有产品需求与审批说明的报价流程示意图" : "Illustration of a quote request workflow with product brief and approval notes"}
+            alt={pickLocalizedText(locale, localizedVisualText.quoteWorkflowAlt)}
             title={dictionary.contact.asideTitle}
             description={dictionary.contact.asideDescription}
           />

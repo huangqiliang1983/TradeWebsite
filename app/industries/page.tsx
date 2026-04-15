@@ -9,6 +9,12 @@ import { IllustrationPanel } from "@/features/marketing/components/IllustrationP
 import { PageHero } from "@/features/marketing/components/PageHero";
 import { SectionHeading } from "@/features/marketing/components/SectionHeading";
 import { getMarketingDictionary } from "@/features/marketing/copy";
+import {
+  getHomeLabel,
+  localizedMeta,
+  localizedVisualText,
+  pickLocalizedText,
+} from "@/features/marketing/localized-text";
 import { getPublishedIndustries } from "@/features/marketing/public-content";
 import { localizeIndustry } from "@/features/marketing/translations";
 import { withLocalePath } from "@/lib/i18n";
@@ -22,11 +28,8 @@ export async function generateMetadata() {
   const locale = await getRequestLocale();
 
   return buildPageMetadata({
-    title: locale === "zh-CN" ? "行业应用模板" : "Industry Application Templates",
-    description:
-      locale === "zh-CN"
-        ? "浏览适合 B2B SEO、买家教育与询盘转化的行业应用页面模板。"
-        : "Explore industry application page templates designed for B2B SEO, buyer education, and inquiry conversion.",
+    title: pickLocalizedText(locale, localizedMeta.industriesTitle),
+    description: pickLocalizedText(locale, localizedMeta.industriesDescription),
     path: "/industries",
     locale,
     keywords: ["industry application page", "B2B use case page", "SEO industry template"],
@@ -38,6 +41,7 @@ export default async function IndustriesPage() {
   const dictionary = getMarketingDictionary(locale);
   const homeHref = withLocalePath(locale, "/");
   const industriesHref = withLocalePath(locale, "/industries");
+  const homeLabel = getHomeLabel(locale);
   const industries = (await getPublishedIndustries()).map((industry) =>
     localizeIndustry(locale, industry),
   );
@@ -46,7 +50,7 @@ export default async function IndustriesPage() {
     <>
       <StructuredData
         data={breadcrumbSchema([
-          { name: locale === "zh-CN" ? "首页" : "Home", path: homeHref },
+          { name: homeLabel, path: homeHref },
           { name: dictionary.industries.eyebrow, path: industriesHref },
         ])}
       />
@@ -56,7 +60,7 @@ export default async function IndustriesPage() {
         title={dictionary.industries.title}
         description={dictionary.industries.description}
         breadcrumbs={
-          <Breadcrumbs items={[{ label: locale === "zh-CN" ? "首页" : "Home", href: homeHref }, { label: dictionary.industries.eyebrow }]} />
+          <Breadcrumbs items={[{ label: homeLabel, href: homeHref }, { label: dictionary.industries.eyebrow }]} />
         }
         actions={
           <CTAGroup
@@ -68,7 +72,7 @@ export default async function IndustriesPage() {
         aside={
           <IllustrationPanel
             src="/brand/operations.svg"
-            alt={locale === "zh-CN" ? "物流、零售和电子项目的行业化方案示意图" : "Illustration of industry-specific sourcing plans across logistics, retail, and electronics"}
+            alt={pickLocalizedText(locale, localizedVisualText.industryPlansAlt)}
             title={dictionary.industries.asideTitle}
             description={dictionary.industries.asideDescription}
           />

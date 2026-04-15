@@ -4,6 +4,7 @@ import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { buttonStyles } from "@/components/ui/Button";
 import { getMarketingDictionary } from "@/features/marketing/copy";
+import { localizedMeta, pickLocalizedText } from "@/features/marketing/localized-text";
 import { withLocalePath } from "@/lib/i18n";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { buildPageMetadata } from "@/lib/seo/metadata";
@@ -14,10 +15,7 @@ export async function generateMetadata() {
 
   return buildPageMetadata({
     title: dictionary.thankYou.eyebrow,
-    description:
-      locale === "zh-CN"
-        ? "一个简洁的感谢页，用于确认询盘已提交并引导用户进入下一步内容。"
-        : "A simple thank-you page confirming the inquiry path and guiding buyers toward the next relevant content.",
+    description: pickLocalizedText(locale, localizedMeta.thankYouDescription),
     path: "/thank-you",
     locale,
     keywords: ["thank you page", "inquiry confirmation", "request a quote"],

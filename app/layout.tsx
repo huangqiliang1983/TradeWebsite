@@ -8,7 +8,7 @@ import { Footer } from "@/components/Footer";
 import { getPublishedCompanyProfile } from "@/features/marketing/public-content";
 import { localizeCompany } from "@/features/marketing/translations";
 import { serverEnv } from "@/lib/env";
-import { buildLanguageAlternates } from "@/lib/i18n";
+import { buildLanguageAlternates, getHtmlLang, getTextDirection } from "@/lib/i18n";
 import { getRequestLocale } from "@/lib/i18n-server";
 import { organizationSchema, websiteSchema } from "@/lib/seo/schema";
 import { siteConfig } from "@/lib/site";
@@ -42,7 +42,7 @@ export default async function RootLayout({
   const company = localizeCompany(locale, await getPublishedCompanyProfile());
 
   return (
-    <html lang={locale === "zh-CN" ? "zh-CN" : "en"} data-scroll-behavior="smooth">
+    <html lang={getHtmlLang(locale)} dir={getTextDirection(locale)} data-scroll-behavior="smooth">
       <body className="min-h-screen bg-[var(--background)] text-[var(--foreground)] antialiased">
         {serverEnv.NEXT_PUBLIC_GTM_ID ? (
           <noscript>

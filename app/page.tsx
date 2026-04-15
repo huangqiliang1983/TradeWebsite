@@ -15,6 +15,7 @@ import { CTAGroup } from "@/features/marketing/components/CTAGroup";
 import { FAQList } from "@/features/marketing/components/FAQList";
 import { IllustrationPanel } from "@/features/marketing/components/IllustrationPanel";
 import { SectionHeading } from "@/features/marketing/components/SectionHeading";
+import { localizedMeta, localizedVisualText, pickLocalizedText } from "@/features/marketing/localized-text";
 import {
   getLocalizedCompanyStats,
   getLocalizedHomeFaq,
@@ -37,15 +38,11 @@ export async function generateMetadata() {
 
   return buildPageMetadata({
     title:
-      locale === "zh-CN"
-        ? "企业外贸官网模板与询盘转化方案"
-        : company.seoTitle || "Global OEM Manufacturing and Export Solutions",
+      locale === "en"
+        ? company.seoTitle || pickLocalizedText(locale, localizedMeta.homeTitle)
+        : pickLocalizedText(locale, localizedMeta.homeTitle),
     description:
-      locale === "zh-CN"
-        ? company.seoDescription ||
-          "面向 Google SEO、产品展示与询盘转化的企业外贸官网模板。"
-        : company.seoDescription ||
-          "Launch a dependable B2B sourcing website with product visibility, SEO-ready content, and direct request-a-quote paths.",
+      company.seoDescription || pickLocalizedText(locale, localizedMeta.homeDescription),
     path: "/",
     locale,
     canonicalUrl: locale === "en" ? company.seoCanonical : undefined,
@@ -108,7 +105,7 @@ export default async function Home() {
             <IllustrationPanel
               src={localizedCompany.logoImage}
               alt={localizedCompany.logoImageAlt}
-              title={locale === "zh-CN" ? "适合运营与外贸转化的首页结构" : "Operations-ready homepage"}
+              title={pickLocalizedText(locale, localizedVisualText.homepageVisualTitle)}
               description={localizedCompany.description}
             />
           </div>

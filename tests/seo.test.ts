@@ -35,6 +35,10 @@ describe("SEO helpers", () => {
     expect(alternates.languages).toMatchObject({
       en: "https://www.remembereverything.com/products",
       "zh-CN": "https://www.remembereverything.com/zh-cn/products",
+      es: "https://www.remembereverything.com/es/products",
+      ru: "https://www.remembereverything.com/ru/products",
+      fr: "https://www.remembereverything.com/fr/products",
+      ar: "https://www.remembereverything.com/ar/products",
       "x-default": "https://www.remembereverything.com/products",
     });
   });

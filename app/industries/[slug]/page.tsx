@@ -11,6 +11,7 @@ import { PageHero } from "@/features/marketing/components/PageHero";
 import { SectionHeading } from "@/features/marketing/components/SectionHeading";
 import { ArticleSections } from "@/features/marketing/components/ArticleSections";
 import { getMarketingDictionary } from "@/features/marketing/copy";
+import { getHomeLabel } from "@/features/marketing/localized-text";
 import {
   getPublishedIndustryBySlug,
   getRedirectForPath,
@@ -61,6 +62,7 @@ export default async function IndustryDetailPage({ params }: IndustryPageProps) 
   const dictionary = getMarketingDictionary(locale);
   const homeHref = withLocalePath(locale, "/");
   const industriesHref = withLocalePath(locale, "/industries");
+  const homeLabel = getHomeLabel(locale);
   const { slug } = await params;
   const industry = await getPublishedIndustryBySlug(slug);
 
@@ -83,7 +85,7 @@ export default async function IndustryDetailPage({ params }: IndustryPageProps) 
     <>
       <StructuredData
         data={breadcrumbSchema([
-          { name: locale === "zh-CN" ? "首页" : "Home", path: homeHref },
+          { name: homeLabel, path: homeHref },
           { name: dictionary.industries.eyebrow, path: industriesHref },
           {
             name: localizedIndustry.name,
@@ -99,7 +101,7 @@ export default async function IndustryDetailPage({ params }: IndustryPageProps) 
         breadcrumbs={
           <Breadcrumbs
             items={[
-              { label: locale === "zh-CN" ? "首页" : "Home", href: homeHref },
+              { label: homeLabel, href: homeHref },
               { label: dictionary.industries.eyebrow, href: industriesHref },
               { label: localizedIndustry.name },
             ]}

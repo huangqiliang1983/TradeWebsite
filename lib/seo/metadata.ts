@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { buildLanguageAlternates } from "@/lib/i18n";
+import { buildLanguageAlternates, getHtmlLang } from "@/lib/i18n";
 import type { Locale } from "@/lib/i18n";
 import { withLocalePath } from "@/lib/i18n";
 import { absoluteUrl, siteConfig } from "@/lib/site";
@@ -44,7 +44,7 @@ export function buildPageMetadata({
       description,
       url: pageUrl,
       siteName: siteConfig.name,
-      locale: locale === "zh-CN" ? "zh_CN" : siteConfig.locale,
+      locale: getHtmlLang(locale).replace("-", "_"),
       type,
       images: [
         {

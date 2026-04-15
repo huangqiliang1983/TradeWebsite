@@ -6,6 +6,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { getMarketingDictionary } from "@/features/marketing/copy";
 import {
   getLocaleFromPathname,
+  i18nConfig,
   stripLocalePrefix,
   withLocalePath,
 } from "@/lib/i18n";
@@ -27,7 +28,7 @@ export function LanguageSwitch({
   const basePath = stripLocalePrefix(pathname);
   const query = searchParams.toString();
 
-  function buildHref(targetLocale: "en" | "zh-CN") {
+  function buildHref(targetLocale: typeof i18nConfig.locales[number]) {
     const targetPath = withLocalePath(targetLocale, basePath);
     return query ? `${targetPath}?${query}` : targetPath;
   }
@@ -35,35 +36,27 @@ export function LanguageSwitch({
   return (
     <div
       className={cx(
-        "inline-flex items-center rounded-full border border-[var(--line)] bg-white/90 p-1 text-sm",
+        "inline-flex max-w-full flex-nowrap items-center overflow-x-auto rounded-full border border-[var(--line)] bg-white/90 p-1 text-sm",
         className,
       )}
       aria-label={dictionary.languageSwitch.label}
     >
-      <Link
-        href={buildHref("en")}
-        className={cx(
-          "rounded-full px-3 py-2 transition",
-          locale === "en"
-            ? "bg-[var(--foreground)] text-white"
-            : "text-[var(--muted)] hover:text-[var(--foreground)]",
-        )}
-        onClick={onNavigate}
-      >
-        {dictionary.languageSwitch.english}
-      </Link>
-      <Link
-        href={buildHref("zh-CN")}
-        className={cx(
-          "rounded-full px-3 py-2 transition",
-          locale === "zh-CN"
-            ? "bg-[var(--foreground)] text-white"
-            : "text-[var(--muted)] hover:text-[var(--foreground)]",
-        )}
-        onClick={onNavigate}
-      >
-        {dictionary.languageSwitch.chinese}
-      </Link>
+      {i18nConfig.locales.map((targetLocale) => (
+        <Link
+          key={targetLocale}
+          href={buildHref(targetLocale)}
+          className={cx(
+            "shrink-0 rounded-full px-2.5 py-2 text-xs transition sm:px-3 sm:text-sm",
+            locale === targetLocale
+              ? "bg-[var(--foreground)] text-white"
+              : "text-[var(--muted)] hover:text-[var(--foreground)]",
+          )}
+          hrefLang={i18nConfig.htmlLangMap[targetLocale]}
+          onClick={onNavigate}
+        >
+          {i18nConfig.localeLabels[targetLocale]}
+        </Link>
+      ))}
     </div>
   );
 }

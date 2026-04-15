@@ -9,6 +9,12 @@ import { IllustrationPanel } from "@/features/marketing/components/IllustrationP
 import { PageHero } from "@/features/marketing/components/PageHero";
 import { SectionHeading } from "@/features/marketing/components/SectionHeading";
 import { getMarketingDictionary } from "@/features/marketing/copy";
+import {
+  getHomeLabel,
+  localizedMeta,
+  localizedVisualText,
+  pickLocalizedText,
+} from "@/features/marketing/localized-text";
 import { getPublishedBlogPosts } from "@/features/marketing/public-content";
 import { localizeBlogPost } from "@/features/marketing/translations";
 import { formatLocalizedDate, withLocalePath } from "@/lib/i18n";
@@ -22,11 +28,8 @@ export async function generateMetadata() {
   const locale = await getRequestLocale();
 
   return buildPageMetadata({
-    title: locale === "zh-CN" ? "博客与 SEO 文章模板" : "Blog and SEO Insight Templates",
-    description:
-      locale === "zh-CN"
-        ? "浏览适合 Google 抓取、文章发现和 B2B 询盘承接的博客列表模板。"
-        : "Browse blog list templates built for Google indexing, article discovery, and B2B inquiry support.",
+    title: pickLocalizedText(locale, localizedMeta.blogTitle),
+    description: pickLocalizedText(locale, localizedMeta.blogDescription),
     path: "/blog",
     locale,
     keywords: ["B2B blog", "SEO article template", "industrial sourcing insights"],
@@ -38,6 +41,7 @@ export default async function BlogPage() {
   const dictionary = getMarketingDictionary(locale);
   const homeHref = withLocalePath(locale, "/");
   const blogHref = withLocalePath(locale, "/blog");
+  const homeLabel = getHomeLabel(locale);
   const blogPosts = (await getPublishedBlogPosts()).map((post) =>
     localizeBlogPost(locale, post),
   );
@@ -46,7 +50,7 @@ export default async function BlogPage() {
     <>
       <StructuredData
         data={breadcrumbSchema([
-          { name: locale === "zh-CN" ? "首页" : "Home", path: homeHref },
+          { name: homeLabel, path: homeHref },
           { name: dictionary.blog.eyebrow, path: blogHref },
         ])}
       />
@@ -55,7 +59,7 @@ export default async function BlogPage() {
         eyebrow={dictionary.blog.eyebrow}
         title={dictionary.blog.title}
         description={dictionary.blog.description}
-        breadcrumbs={<Breadcrumbs items={[{ label: locale === "zh-CN" ? "首页" : "Home", href: homeHref }, { label: dictionary.blog.eyebrow }]} />}
+        breadcrumbs={<Breadcrumbs items={[{ label: homeLabel, href: homeHref }, { label: dictionary.blog.eyebrow }]} />}
         actions={
           <CTAGroup
             locale={locale}
@@ -66,7 +70,7 @@ export default async function BlogPage() {
         aside={
           <IllustrationPanel
             src="/brand/insight-map.svg"
-            alt={locale === "zh-CN" ? "文章规划、SEO 结构与询盘承接示意图" : "Illustration of article planning, SEO structure, and inquiry handoff"}
+            alt={pickLocalizedText(locale, localizedVisualText.blogPlanningAlt)}
             title={dictionary.blog.asideTitle}
             description={dictionary.blog.asideDescription}
           />

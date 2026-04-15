@@ -7,6 +7,12 @@ import { IllustrationPanel } from "@/features/marketing/components/IllustrationP
 import { PageHero } from "@/features/marketing/components/PageHero";
 import { SectionHeading } from "@/features/marketing/components/SectionHeading";
 import { getMarketingDictionary } from "@/features/marketing/copy";
+import {
+  aboutLocalizedLists,
+  getHomeLabel,
+  localizedMeta,
+  pickLocalizedText,
+} from "@/features/marketing/localized-text";
 import { getPublishedCompanyProfile } from "@/features/marketing/public-content";
 import { localizeCompany } from "@/features/marketing/translations";
 import { withLocalePath } from "@/lib/i18n";
@@ -21,12 +27,20 @@ export async function generateMetadata() {
   const company = localizeCompany(locale, await getPublishedCompanyProfile());
 
   return buildPageMetadata({
-    title: locale === "zh-CN" ? `关于 ${company.companyName}` : `About ${company.companyName}`,
+    title:
+      locale === "zh-CN"
+        ? `关于 ${company.companyName}`
+        : locale === "es"
+          ? `Nosotros | ${company.companyName}`
+          : locale === "fr"
+            ? `A propos | ${company.companyName}`
+            : locale === "ru"
+              ? `О нас | ${company.companyName}`
+              : locale === "ar"
+                ? `من نحن | ${company.companyName}`
+                : `About ${company.companyName}`,
     description:
-      company.summary ||
-      (locale === "zh-CN"
-        ? "了解网站如何围绕报价、打样、生产透明度与出口文件来服务 B2B 买家。"
-        : "Learn how Remember Everything structures quoting, sampling, production visibility, and export documentation for B2B buyers."),
+      company.summary || pickLocalizedText(locale, localizedMeta.aboutDescription),
     path: "/about",
     locale,
     keywords: ["about export supplier", "OEM manufacturing team", "B2B sourcing company"],
@@ -39,38 +53,15 @@ export default async function AboutPage() {
   const company = localizeCompany(locale, await getPublishedCompanyProfile());
   const homeHref = withLocalePath(locale, "/");
   const aboutHref = withLocalePath(locale, "/about");
-  const milestones =
-    locale === "zh-CN"
-      ? [
-          "围绕目标市场和渠道计划展开商务评估",
-          "覆盖包装、标签和功能预期的样品确认节点",
-          "让采购和质量团队基于同一份简报推进量产跟踪",
-          "为报关、仓储入库和上市团队准备出货前文件",
-        ]
-      : [
-          "Commercial review aligned with the buyer’s target market and channel plan",
-          "Sample approval checkpoints covering packaging, labels, and functional expectations",
-          "Production follow-up designed to keep procurement and quality teams working from one brief",
-          "Pre-shipment documentation prepared for customs, warehouse intake, and launch teams",
-        ];
-  const principles =
-    locale === "zh-CN"
-      ? [
-          "商业承诺必须建立在真实可执行的运营基础上。",
-          "页面和文件都要让非技术角色也能看懂流程。",
-          "我们的结构为复购和长期合作而设计，而不是一次性包装。",
-        ]
-      : [
-          "We keep commercial promises grounded in operational reality.",
-          "We write pages and documents so non-technical stakeholders can still follow the process.",
-          "We design around repeat orders, not one-off hero claims.",
-        ];
+  const homeLabel = getHomeLabel(locale);
+  const milestones = aboutLocalizedLists.milestones[locale];
+  const principles = aboutLocalizedLists.principles[locale];
 
   return (
     <>
       <StructuredData
         data={breadcrumbSchema([
-          { name: locale === "zh-CN" ? "首页" : "Home", path: homeHref },
+          { name: homeLabel, path: homeHref },
           { name: dictionary.about.eyebrow, path: aboutHref },
         ])}
       />
@@ -79,7 +70,7 @@ export default async function AboutPage() {
         eyebrow={dictionary.about.eyebrow}
         title={dictionary.about.title}
         description={company.description}
-        breadcrumbs={<Breadcrumbs items={[{ label: locale === "zh-CN" ? "首页" : "Home", href: homeHref }, { label: dictionary.about.eyebrow }]} />}
+        breadcrumbs={<Breadcrumbs items={[{ label: homeLabel, href: homeHref }, { label: dictionary.about.eyebrow }]} />}
         actions={<CTAGroup locale={locale} />}
         aside={
           <IllustrationPanel
