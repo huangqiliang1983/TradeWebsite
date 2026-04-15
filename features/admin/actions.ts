@@ -124,6 +124,7 @@ export async function saveCompanyProfileAction(formData: FormData) {
   const companyName = getFormString(formData, "companyName");
   const slug = getFormString(formData, "slug");
   const publishStatus = getPublishStatus(formData);
+  let savedRecordId = id;
 
   if (!companyName || !slug) {
     redirect(buildRedirect(redirectPath, { error: "Company name and slug are required." }));
@@ -205,7 +206,7 @@ export async function saveCompanyProfileAction(formData: FormData) {
     });
 
     revalidatePublishedSiteShell();
-    redirect(buildRedirect(redirectPath, { status: "saved" }));
+    savedRecordId = record.id;
   } catch (error) {
     const message = getAdminActionErrorMessage(
       error,
@@ -213,6 +214,8 @@ export async function saveCompanyProfileAction(formData: FormData) {
     );
     redirect(buildRedirect(redirectPath, { error: message }));
   }
+
+  redirect(buildRedirect(redirectPath, { status: "saved", edit: savedRecordId }));
 }
 
 export async function saveProductCategoryAction(formData: FormData) {
@@ -323,6 +326,7 @@ export async function saveProductAction(formData: FormData) {
   const name = getFormString(formData, "name");
   const slug = getFormString(formData, "slug");
   const publishStatus = getPublishStatus(formData);
+  let savedRecordId = id;
 
   if (!name || !slug) {
     redirect(buildRedirect(redirectPath, { error: "Product name and slug are required." }));
@@ -414,7 +418,7 @@ export async function saveProductAction(formData: FormData) {
       slug: record.slug,
       previousSlug: previous?.slug ?? null,
     });
-    redirect(buildRedirect(redirectPath, { status: "saved", edit: record.id }));
+    savedRecordId = record.id;
   } catch (error) {
     const message = getAdminActionErrorMessage(
       error,
@@ -422,6 +426,8 @@ export async function saveProductAction(formData: FormData) {
     );
     redirect(buildRedirect(redirectPath, { error: message }));
   }
+
+  redirect(buildRedirect(redirectPath, { status: "saved", edit: savedRecordId }));
 }
 
 export async function deleteProductAction(formData: FormData) {
@@ -460,6 +466,7 @@ export async function saveIndustryPageAction(formData: FormData) {
   const title = getFormString(formData, "title");
   const slug = getFormString(formData, "slug");
   const publishStatus = getPublishStatus(formData);
+  let savedRecordId = id;
 
   if (!title || !slug) {
     redirect(buildRedirect(redirectPath, { error: "Industry title and slug are required." }));
@@ -541,7 +548,7 @@ export async function saveIndustryPageAction(formData: FormData) {
       slug: record.slug,
       previousSlug: previous?.slug ?? null,
     });
-    redirect(buildRedirect(redirectPath, { status: "saved", edit: record.id }));
+    savedRecordId = record.id;
   } catch (error) {
     const message = getAdminActionErrorMessage(
       error,
@@ -549,6 +556,8 @@ export async function saveIndustryPageAction(formData: FormData) {
     );
     redirect(buildRedirect(redirectPath, { error: message }));
   }
+
+  redirect(buildRedirect(redirectPath, { status: "saved", edit: savedRecordId }));
 }
 
 export async function deleteIndustryPageAction(formData: FormData) {
@@ -587,6 +596,7 @@ export async function saveBlogPostAction(formData: FormData) {
   const title = getFormString(formData, "title");
   const slug = getFormString(formData, "slug");
   const publishStatus = getPublishStatus(formData);
+  let savedRecordId = id;
 
   if (!title || !slug) {
     redirect(buildRedirect(redirectPath, { error: "Blog title and slug are required." }));
@@ -667,7 +677,7 @@ export async function saveBlogPostAction(formData: FormData) {
       slug: record.slug,
       previousSlug: previous?.slug ?? null,
     });
-    redirect(buildRedirect(redirectPath, { status: "saved", edit: record.id }));
+    savedRecordId = record.id;
   } catch (error) {
     const message = getAdminActionErrorMessage(
       error,
@@ -675,6 +685,8 @@ export async function saveBlogPostAction(formData: FormData) {
     );
     redirect(buildRedirect(redirectPath, { error: message }));
   }
+
+  redirect(buildRedirect(redirectPath, { status: "saved", edit: savedRecordId }));
 }
 
 export async function deleteBlogPostAction(formData: FormData) {
