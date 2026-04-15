@@ -1,483 +1,283 @@
 import type { Prisma } from "@prisma/client";
 
 import { db } from "@/lib/db";
-import { serverEnv } from "@/lib/env";
 import { i18nConfig, type Locale } from "@/lib/i18n";
+import {
+  getFormString,
+  getOptionalString,
+  parseLineList,
+  parseSpecificationLines,
+} from "@/features/admin/utils";
 
-type TranslatableEntityType =
-  | "CompanyProfile"
-  | "ProductCategory"
-  | "Product"
-  | "IndustryPage"
-  | "BlogPost"
-  | "FAQ";
+export type AdminTranslationLocale = Exclude<Locale, "en">;
 
-type TranslationPayload = Record<string, Prisma.JsonValue | string | null | undefined>;
+export const adminTranslationLocales = i18nConfig.locales.filter(
+  (locale): locale is AdminTranslationLocale => locale !== "en",
+);
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null;
+type TranslationField =
+  | "answer"
+  | "companyName"
+  | "contentText"
+  | "coverImageAlt"
+  | "description"
+  | "excerpt"
+  | "heroImageAlt"
+  | "heroTitle"
+  | "logoImageAlt"
+  | "name"
+  | "question"
+  | "sellingPoints"
+  | "seoDescription"
+  | "seoTitle"
+  | "specifications"
+  | "summary"
+  | "tagline"
+  | "title";
+
+function fieldName(locale: AdminTranslationLocale, field: TranslationField) {
+  return `translation_${locale}_${field}`;
 }
 
-function getTargetLocales() {
-  const sourceLocale = serverEnv.TRANSLATION_SOURCE_LOCALE;
-
-  return i18nConfig.locales.filter((locale) => locale !== sourceLocale);
+function translationString(formData: FormData, locale: AdminTranslationLocale, field: TranslationField) {
+  return getOptionalString(formData, fieldName(locale, field));
 }
 
-function removeEmptyFields(payload: TranslationPayload) {
-  return Object.fromEntries(
-    Object.entries(payload).filter(([, value]) => {
-      if (typeof value === "string") {
-        return value.trim().length > 0;
+function translationLines(formData: FormData, locale: AdminTranslationLocale, field: TranslationField) {
+  return parseLineList(getFormString(formData, fieldName(locale, field)));
+}
+
+function translationSpecs(formData: FormData, locale: AdminTranslationLocale) {
+  return parseSpecificationLines(getFormString(formData, fieldName(locale, "specifications")));
+}
+
+function translationSections(formData: FormData, locale: AdminTranslationLocale) {
+  const blocks = getFormString(formData, fieldName(locale, "contentText"))
+    .split(/\n{2,}/)
+    .map((block) => block.trim())
+    .filter(Boolean);
+
+  return blocks.map((block, index) => ({
+    heading: `Section ${index + 1}`,
+    paragraphs: block
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter(Boolean),
+  }));
+}
+
+function hasTextValues(values: Array<string | null>) {
+  return values.some((value) => Boolean(value));
+}
+
+function hasJsonValues(values: Array<Prisma.InputJsonValue | undefined>) {
+  return values.some((value) => {
+    if (!value) {
+      return false;
+    }
+
+    return Array.isArray(value) ? value.length > 0 : true;
+  });
+}
+
+function nonEmptyJson(value: Prisma.InputJsonValue): Prisma.InputJsonValue | undefined {
+  return Array.isArray(value) && value.length === 0 ? undefined : value;
+}
+
+export async function saveCompanyProfileTranslations(formData: FormData, companyProfileId: string) {
+  await Promise.all(
+    adminTranslationLocales.map(async (locale) => {
+      const data = {
+        companyName: translationString(formData, locale, "companyName"),
+        tagline: translationString(formData, locale, "tagline"),
+        summary: translationString(formData, locale, "summary"),
+        description: translationString(formData, locale, "description"),
+        logoImageAlt: translationString(formData, locale, "logoImageAlt"),
+        seoTitle: translationString(formData, locale, "seoTitle"),
+        seoDescription: translationString(formData, locale, "seoDescription"),
+      };
+
+      if (!hasTextValues(Object.values(data))) {
+        await db.companyProfileTranslation.deleteMany({
+          where: { companyProfileId, locale },
+        });
+        return;
       }
 
-      return value !== null && value !== undefined;
+      await db.companyProfileTranslation.upsert({
+        where: { companyProfileId_locale: { companyProfileId, locale } },
+        update: { ...data, translationStatus: "PUBLISHED" },
+        create: { companyProfileId, locale, ...data, translationStatus: "PUBLISHED" },
+      });
     }),
   );
 }
 
-function extractResponseText(data: unknown) {
-  if (typeof data !== "object" || data === null) {
-    return "";
-  }
+export async function saveProductCategoryTranslations(formData: FormData, productCategoryId: string) {
+  await Promise.all(
+    adminTranslationLocales.map(async (locale) => {
+      const data = {
+        name: translationString(formData, locale, "name"),
+        summary: translationString(formData, locale, "summary"),
+        description: translationString(formData, locale, "description"),
+        seoTitle: translationString(formData, locale, "seoTitle"),
+        seoDescription: translationString(formData, locale, "seoDescription"),
+      };
 
-  if ("output_text" in data && typeof data.output_text === "string") {
-    return data.output_text;
-  }
-
-  const output = "output" in data ? data.output : null;
-
-  if (!Array.isArray(output)) {
-    return "";
-  }
-
-  return output
-    .flatMap((item) => {
-      if (typeof item !== "object" || item === null || !("content" in item)) {
-        return [];
+      if (!hasTextValues(Object.values(data))) {
+        await db.productCategoryTranslation.deleteMany({
+          where: { productCategoryId, locale },
+        });
+        return;
       }
 
-      const content = item.content;
-
-      if (!Array.isArray(content)) {
-        return [];
-      }
-
-      return content
-        .map((part) => {
-          if (typeof part !== "object" || part === null) {
-            return "";
-          }
-
-          if ("text" in part && typeof part.text === "string") {
-            return part.text;
-          }
-
-          return "";
-        })
-        .filter(Boolean);
-    })
-    .join("\n");
-}
-
-async function translatePayload(payload: TranslationPayload, targetLocale: Locale) {
-  const sanitizedPayload = removeEmptyFields(payload);
-
-  if (!serverEnv.OPENAI_API_KEY || Object.keys(sanitizedPayload).length === 0) {
-    return null;
-  }
-
-  const response = await fetch("https://api.openai.com/v1/responses", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${serverEnv.OPENAI_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: serverEnv.OPENAI_TRANSLATION_MODEL,
-      instructions:
-        "Translate the provided JSON values for a B2B export website. Keep the exact JSON keys and structure. Preserve brand names, SKUs, URLs, emails, phone numbers, numbers, units, HTML-free plain text, and technical model names. Return only valid JSON.",
-      input: JSON.stringify({
-        targetLocale,
-        sourceLocale: serverEnv.TRANSLATION_SOURCE_LOCALE,
-        content: sanitizedPayload,
-      }),
-      text: {
-        format: {
-          type: "json_object",
-        },
-      },
+      await db.productCategoryTranslation.upsert({
+        where: { productCategoryId_locale: { productCategoryId, locale } },
+        update: { ...data, translationStatus: "PUBLISHED" },
+        create: { productCategoryId, locale, ...data, translationStatus: "PUBLISHED" },
+      });
     }),
-  });
-
-  if (!response.ok) {
-    return null;
-  }
-
-  const data = await response.json();
-  const outputText = extractResponseText(data);
-
-  if (!outputText) {
-    return null;
-  }
-
-  try {
-    const parsed = JSON.parse(outputText) as unknown;
-
-    if (isRecord(parsed) && isRecord(parsed.content)) {
-      return parsed.content as TranslationPayload;
-    }
-
-    return isRecord(parsed) ? (parsed as TranslationPayload) : null;
-  } catch {
-    return null;
-  }
-}
-
-async function translateForLocales(payload: TranslationPayload) {
-  const entries: Array<{ locale: Locale; data: TranslationPayload }> = [];
-
-  for (const locale of getTargetLocales()) {
-    const translated = await translatePayload(payload, locale);
-
-    if (translated) {
-      entries.push({ locale, data: translated });
-    }
-  }
-
-  return entries;
-}
-
-function asJson(value: TranslationPayload[string]): Prisma.InputJsonValue | undefined {
-  if (value === null || value === undefined || typeof value === "string") {
-    return undefined;
-  }
-
-  return value as Prisma.InputJsonValue;
-}
-
-function asText(value: TranslationPayload[string]) {
-  return typeof value === "string" ? value : undefined;
-}
-
-async function translateCompanyProfile(id: string) {
-  const record = await db.companyProfile.findUnique({ where: { id } });
-
-  if (!record) {
-    return 0;
-  }
-
-  const translations = await translateForLocales({
-    companyName: record.companyName,
-    tagline: record.tagline,
-    summary: record.summary,
-    description: record.description,
-    logoImageAlt: record.logoImageAlt,
-    seoTitle: record.seoTitle,
-    seoDescription: record.seoDescription,
-  });
-
-  await Promise.all(
-    translations.map(({ locale, data }) =>
-      db.companyProfileTranslation.upsert({
-        where: { companyProfileId_locale: { companyProfileId: id, locale } },
-        update: {
-          companyName: asText(data.companyName),
-          tagline: asText(data.tagline),
-          summary: asText(data.summary),
-          description: asText(data.description),
-          logoImageAlt: asText(data.logoImageAlt),
-          seoTitle: asText(data.seoTitle),
-          seoDescription: asText(data.seoDescription),
-          translationStatus: "MACHINE_TRANSLATED",
-        },
-        create: {
-          companyProfileId: id,
-          locale,
-          companyName: asText(data.companyName),
-          tagline: asText(data.tagline),
-          summary: asText(data.summary),
-          description: asText(data.description),
-          logoImageAlt: asText(data.logoImageAlt),
-          seoTitle: asText(data.seoTitle),
-          seoDescription: asText(data.seoDescription),
-          translationStatus: "MACHINE_TRANSLATED",
-        },
-      }),
-    ),
   );
-
-  return translations.length;
 }
 
-async function translateProductCategory(id: string) {
-  const record = await db.productCategory.findUnique({ where: { id } });
-
-  if (!record) {
-    return 0;
-  }
-
-  const translations = await translateForLocales({
-    name: record.name,
-    summary: record.summary,
-    description: record.description,
-    seoTitle: record.seoTitle,
-    seoDescription: record.seoDescription,
-  });
-
+export async function saveProductTranslations(formData: FormData, productId: string) {
   await Promise.all(
-    translations.map(({ locale, data }) =>
-      db.productCategoryTranslation.upsert({
-        where: { productCategoryId_locale: { productCategoryId: id, locale } },
-        update: {
-          name: asText(data.name),
-          summary: asText(data.summary),
-          description: asText(data.description),
-          seoTitle: asText(data.seoTitle),
-          seoDescription: asText(data.seoDescription),
-          translationStatus: "MACHINE_TRANSLATED",
-        },
-        create: {
-          productCategoryId: id,
-          locale,
-          name: asText(data.name),
-          summary: asText(data.summary),
-          description: asText(data.description),
-          seoTitle: asText(data.seoTitle),
-          seoDescription: asText(data.seoDescription),
-          translationStatus: "MACHINE_TRANSLATED",
-        },
-      }),
-    ),
-  );
+    adminTranslationLocales.map(async (locale) => {
+      const sellingPoints = nonEmptyJson(translationLines(formData, locale, "sellingPoints"));
+      const specifications = nonEmptyJson(translationSpecs(formData, locale));
+      const data = {
+        name: translationString(formData, locale, "name"),
+        summary: translationString(formData, locale, "summary"),
+        description: translationString(formData, locale, "description"),
+        heroTitle: translationString(formData, locale, "heroTitle"),
+        heroImageAlt: translationString(formData, locale, "heroImageAlt"),
+        sellingPoints,
+        specifications,
+        seoTitle: translationString(formData, locale, "seoTitle"),
+        seoDescription: translationString(formData, locale, "seoDescription"),
+      };
 
-  return translations.length;
+      if (
+        !hasTextValues([
+          data.name,
+          data.summary,
+          data.description,
+          data.heroTitle,
+          data.heroImageAlt,
+          data.seoTitle,
+          data.seoDescription,
+        ]) &&
+        !hasJsonValues([sellingPoints, specifications])
+      ) {
+        await db.productTranslation.deleteMany({ where: { productId, locale } });
+        return;
+      }
+
+      await db.productTranslation.upsert({
+        where: { productId_locale: { productId, locale } },
+        update: { ...data, translationStatus: "PUBLISHED" },
+        create: { productId, locale, ...data, translationStatus: "PUBLISHED" },
+      });
+    }),
+  );
 }
 
-async function translateProduct(id: string) {
-  const record = await db.product.findUnique({ where: { id } });
-
-  if (!record) {
-    return 0;
-  }
-
-  const translations = await translateForLocales({
-    name: record.name,
-    summary: record.summary,
-    description: record.description,
-    heroTitle: record.heroTitle,
-    heroImageAlt: record.heroImageAlt,
-    sellingPoints: record.sellingPoints,
-    specifications: record.specifications,
-    seoTitle: record.seoTitle,
-    seoDescription: record.seoDescription,
-  });
-
+export async function saveIndustryPageTranslations(formData: FormData, industryPageId: string) {
   await Promise.all(
-    translations.map(({ locale, data }) =>
-      db.productTranslation.upsert({
-        where: { productId_locale: { productId: id, locale } },
-        update: {
-          name: asText(data.name),
-          summary: asText(data.summary),
-          description: asText(data.description),
-          heroTitle: asText(data.heroTitle),
-          heroImageAlt: asText(data.heroImageAlt),
-          sellingPoints: asJson(data.sellingPoints),
-          specifications: asJson(data.specifications),
-          seoTitle: asText(data.seoTitle),
-          seoDescription: asText(data.seoDescription),
-          translationStatus: "MACHINE_TRANSLATED",
-        },
-        create: {
-          productId: id,
-          locale,
-          name: asText(data.name),
-          summary: asText(data.summary),
-          description: asText(data.description),
-          heroTitle: asText(data.heroTitle),
-          heroImageAlt: asText(data.heroImageAlt),
-          sellingPoints: asJson(data.sellingPoints),
-          specifications: asJson(data.specifications),
-          seoTitle: asText(data.seoTitle),
-          seoDescription: asText(data.seoDescription),
-          translationStatus: "MACHINE_TRANSLATED",
-        },
-      }),
-    ),
-  );
+    adminTranslationLocales.map(async (locale) => {
+      const content = nonEmptyJson(translationSections(formData, locale));
+      const data = {
+        title: translationString(formData, locale, "title"),
+        summary: translationString(formData, locale, "summary"),
+        description: translationString(formData, locale, "description"),
+        heroTitle: translationString(formData, locale, "heroTitle"),
+        heroImageAlt: translationString(formData, locale, "heroImageAlt"),
+        content,
+        seoTitle: translationString(formData, locale, "seoTitle"),
+        seoDescription: translationString(formData, locale, "seoDescription"),
+      };
 
-  return translations.length;
+      if (
+        !hasTextValues([
+          data.title,
+          data.summary,
+          data.description,
+          data.heroTitle,
+          data.heroImageAlt,
+          data.seoTitle,
+          data.seoDescription,
+        ]) &&
+        !hasJsonValues([content])
+      ) {
+        await db.industryPageTranslation.deleteMany({ where: { industryPageId, locale } });
+        return;
+      }
+
+      await db.industryPageTranslation.upsert({
+        where: { industryPageId_locale: { industryPageId, locale } },
+        update: { ...data, translationStatus: "PUBLISHED" },
+        create: { industryPageId, locale, ...data, translationStatus: "PUBLISHED" },
+      });
+    }),
+  );
 }
 
-async function translateIndustryPage(id: string) {
-  const record = await db.industryPage.findUnique({ where: { id } });
-
-  if (!record) {
-    return 0;
-  }
-
-  const translations = await translateForLocales({
-    title: record.title,
-    summary: record.summary,
-    description: record.description,
-    heroTitle: record.heroTitle,
-    heroImageAlt: record.heroImageAlt,
-    content: record.content,
-    seoTitle: record.seoTitle,
-    seoDescription: record.seoDescription,
-  });
-
+export async function saveBlogPostTranslations(formData: FormData, blogPostId: string) {
   await Promise.all(
-    translations.map(({ locale, data }) =>
-      db.industryPageTranslation.upsert({
-        where: { industryPageId_locale: { industryPageId: id, locale } },
-        update: {
-          title: asText(data.title),
-          summary: asText(data.summary),
-          description: asText(data.description),
-          heroTitle: asText(data.heroTitle),
-          heroImageAlt: asText(data.heroImageAlt),
-          content: asJson(data.content),
-          seoTitle: asText(data.seoTitle),
-          seoDescription: asText(data.seoDescription),
-          translationStatus: "MACHINE_TRANSLATED",
-        },
-        create: {
-          industryPageId: id,
-          locale,
-          title: asText(data.title),
-          summary: asText(data.summary),
-          description: asText(data.description),
-          heroTitle: asText(data.heroTitle),
-          heroImageAlt: asText(data.heroImageAlt),
-          content: asJson(data.content),
-          seoTitle: asText(data.seoTitle),
-          seoDescription: asText(data.seoDescription),
-          translationStatus: "MACHINE_TRANSLATED",
-        },
-      }),
-    ),
-  );
+    adminTranslationLocales.map(async (locale) => {
+      const content = nonEmptyJson(translationSections(formData, locale));
+      const data = {
+        title: translationString(formData, locale, "title"),
+        excerpt: translationString(formData, locale, "excerpt"),
+        content,
+        coverImageAlt: translationString(formData, locale, "coverImageAlt"),
+        seoTitle: translationString(formData, locale, "seoTitle"),
+        seoDescription: translationString(formData, locale, "seoDescription"),
+      };
 
-  return translations.length;
+      if (
+        !hasTextValues([
+          data.title,
+          data.excerpt,
+          data.coverImageAlt,
+          data.seoTitle,
+          data.seoDescription,
+        ]) &&
+        !hasJsonValues([content])
+      ) {
+        await db.blogPostTranslation.deleteMany({ where: { blogPostId, locale } });
+        return;
+      }
+
+      await db.blogPostTranslation.upsert({
+        where: { blogPostId_locale: { blogPostId, locale } },
+        update: { ...data, translationStatus: "PUBLISHED" },
+        create: { blogPostId, locale, ...data, translationStatus: "PUBLISHED" },
+      });
+    }),
+  );
 }
 
-async function translateBlogPost(id: string) {
-  const record = await db.blogPost.findUnique({ where: { id } });
-
-  if (!record) {
-    return 0;
-  }
-
-  const translations = await translateForLocales({
-    title: record.title,
-    excerpt: record.excerpt,
-    content: record.content,
-    coverImageAlt: record.coverImageAlt,
-    seoTitle: record.seoTitle,
-    seoDescription: record.seoDescription,
-  });
-
+export async function saveFaqTranslations(formData: FormData, faqId: string) {
   await Promise.all(
-    translations.map(({ locale, data }) =>
-      db.blogPostTranslation.upsert({
-        where: { blogPostId_locale: { blogPostId: id, locale } },
-        update: {
-          title: asText(data.title),
-          excerpt: asText(data.excerpt),
-          content: asJson(data.content),
-          coverImageAlt: asText(data.coverImageAlt),
-          seoTitle: asText(data.seoTitle),
-          seoDescription: asText(data.seoDescription),
-          translationStatus: "MACHINE_TRANSLATED",
-        },
-        create: {
-          blogPostId: id,
-          locale,
-          title: asText(data.title),
-          excerpt: asText(data.excerpt),
-          content: asJson(data.content),
-          coverImageAlt: asText(data.coverImageAlt),
-          seoTitle: asText(data.seoTitle),
-          seoDescription: asText(data.seoDescription),
-          translationStatus: "MACHINE_TRANSLATED",
-        },
-      }),
-    ),
+    adminTranslationLocales.map(async (locale) => {
+      const data = {
+        question: translationString(formData, locale, "question"),
+        answer: translationString(formData, locale, "answer"),
+        seoTitle: translationString(formData, locale, "seoTitle"),
+        seoDescription: translationString(formData, locale, "seoDescription"),
+      };
+
+      if (!hasTextValues(Object.values(data))) {
+        await db.fAQTranslation.deleteMany({ where: { faqId, locale } });
+        return;
+      }
+
+      await db.fAQTranslation.upsert({
+        where: { faqId_locale: { faqId, locale } },
+        update: { ...data, translationStatus: "PUBLISHED" },
+        create: { faqId, locale, ...data, translationStatus: "PUBLISHED" },
+      });
+    }),
   );
-
-  return translations.length;
-}
-
-async function translateFaq(id: string) {
-  const record = await db.fAQ.findUnique({ where: { id } });
-
-  if (!record) {
-    return 0;
-  }
-
-  const translations = await translateForLocales({
-    question: record.question,
-    answer: record.answer,
-    seoTitle: record.seoTitle,
-    seoDescription: record.seoDescription,
-  });
-
-  await Promise.all(
-    translations.map(({ locale, data }) =>
-      db.fAQTranslation.upsert({
-        where: { faqId_locale: { faqId: id, locale } },
-        update: {
-          question: asText(data.question),
-          answer: asText(data.answer),
-          seoTitle: asText(data.seoTitle),
-          seoDescription: asText(data.seoDescription),
-          translationStatus: "MACHINE_TRANSLATED",
-        },
-        create: {
-          faqId: id,
-          locale,
-          question: asText(data.question),
-          answer: asText(data.answer),
-          seoTitle: asText(data.seoTitle),
-          seoDescription: asText(data.seoDescription),
-          translationStatus: "MACHINE_TRANSLATED",
-        },
-      }),
-    ),
-  );
-
-  return translations.length;
-}
-
-export async function generateEntityTranslations({
-  entityType,
-  entityId,
-}: {
-  entityType: TranslatableEntityType;
-  entityId: string;
-}) {
-  if (serverEnv.AUTO_TRANSLATE_ON_SAVE !== "true" || !serverEnv.OPENAI_API_KEY) {
-    return { generated: 0, skipped: true };
-  }
-
-  const generated = await (async () => {
-    switch (entityType) {
-      case "CompanyProfile":
-        return translateCompanyProfile(entityId);
-      case "ProductCategory":
-        return translateProductCategory(entityId);
-      case "Product":
-        return translateProduct(entityId);
-      case "IndustryPage":
-        return translateIndustryPage(entityId);
-      case "BlogPost":
-        return translateBlogPost(entityId);
-      case "FAQ":
-        return translateFaq(entityId);
-    }
-  })();
-
-  return { generated, skipped: false };
 }

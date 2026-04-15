@@ -10,6 +10,7 @@ import { AdminField } from "@/features/admin/components/AdminField";
 import { AdminPageHeader } from "@/features/admin/components/AdminPageHeader";
 import { AdminStatusNotice } from "@/features/admin/components/AdminStatusNotice";
 import { AdminTable } from "@/features/admin/components/AdminTable";
+import { AdminTranslationFields } from "@/features/admin/components/AdminTranslationFields";
 import {
   getAdminDictionary,
   getAdminPublishStatusLabel,
@@ -30,6 +31,7 @@ export default async function AdminCategoriesPage({
   const { edit, status, error } = await searchParams;
   const categories = await db.productCategory.findMany({
     orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+    include: { translations: { orderBy: { locale: "asc" } } },
   });
   const selected = edit
     ? categories.find((item) => item.id === edit) ?? null
@@ -100,6 +102,18 @@ export default async function AdminCategoriesPage({
             <AdminField label={dictionary.common.seoDescription}>
               <textarea name="seoDescription" defaultValue={selected?.seoDescription ?? ""} className="min-h-24 rounded-2xl border border-[var(--line)] px-4 py-3" />
             </AdminField>
+            <AdminTranslationFields
+              title={dictionary.common.translations}
+              description={dictionary.common.translationsDescription}
+              translations={selected?.translations}
+              fields={[
+                { name: "name", label: dictionary.common.name },
+                { name: "summary", label: dictionary.common.summary, kind: "textarea" },
+                { name: "description", label: dictionary.common.descriptionField, kind: "textarea" },
+                { name: "seoTitle", label: dictionary.common.seoTitle },
+                { name: "seoDescription", label: dictionary.common.seoDescription, kind: "textarea" },
+              ]}
+            />
             <button type="submit" className="inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--accent)] bg-[var(--accent)] px-5 text-sm font-medium text-white">
               {dictionary.categoriesPage.save}
             </button>

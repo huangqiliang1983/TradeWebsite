@@ -7,6 +7,7 @@ import { AdminField } from "@/features/admin/components/AdminField";
 import { AdminPageHeader } from "@/features/admin/components/AdminPageHeader";
 import { AdminStatusNotice } from "@/features/admin/components/AdminStatusNotice";
 import { AdminTable } from "@/features/admin/components/AdminTable";
+import { AdminTranslationFields } from "@/features/admin/components/AdminTranslationFields";
 import {
   getAdminDictionary,
   getAdminPublishStatusLabel,
@@ -25,7 +26,10 @@ export default async function AdminBlogPage({ searchParams }: BlogPageProps) {
   const dictionary = getAdminDictionary(locale);
   const publishStatusOptions = getAdminPublishStatusOptions(locale);
   const { edit, status, error } = await searchParams;
-  const posts = await db.blogPost.findMany({ orderBy: [{ publishedAt: "desc" }, { createdAt: "asc" }] });
+  const posts = await db.blogPost.findMany({
+    orderBy: [{ publishedAt: "desc" }, { createdAt: "asc" }],
+    include: { translations: { orderBy: { locale: "asc" } } },
+  });
   const selected = edit ? posts.find((item) => item.id === edit) ?? null : posts[0] ?? null;
 
   return (
@@ -103,6 +107,24 @@ export default async function AdminBlogPage({ searchParams }: BlogPageProps) {
             <AdminField label={dictionary.common.seoDescription}>
               <textarea name="seoDescription" defaultValue={selected?.seoDescription ?? ""} className="min-h-24 rounded-2xl border border-[var(--line)] px-4 py-3" />
             </AdminField>
+            <AdminTranslationFields
+              title={dictionary.common.translations}
+              description={dictionary.common.translationsDescription}
+              translations={selected?.translations}
+              fields={[
+                { name: "title", label: dictionary.common.title },
+                { name: "excerpt", label: dictionary.blogPage.excerpt, kind: "textarea" },
+                { name: "coverImageAlt", label: dictionary.blogPage.coverImageAlt },
+                {
+                  name: "contentText",
+                  sourceName: "content",
+                  label: dictionary.blogPage.content,
+                  kind: "content",
+                },
+                { name: "seoTitle", label: dictionary.common.seoTitle },
+                { name: "seoDescription", label: dictionary.common.seoDescription, kind: "textarea" },
+              ]}
+            />
             <button type="submit" className="inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--accent)] bg-[var(--accent)] px-5 text-sm font-medium text-white">
               {dictionary.blogPage.save}
             </button>

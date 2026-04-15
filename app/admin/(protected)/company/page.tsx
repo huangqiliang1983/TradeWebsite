@@ -4,6 +4,7 @@ import { AdminCard } from "@/features/admin/components/AdminCard";
 import { AdminField } from "@/features/admin/components/AdminField";
 import { AdminPageHeader } from "@/features/admin/components/AdminPageHeader";
 import { AdminStatusNotice } from "@/features/admin/components/AdminStatusNotice";
+import { AdminTranslationFields } from "@/features/admin/components/AdminTranslationFields";
 import { getAdminDictionary, getAdminPublishStatusOptions } from "@/features/admin/copy";
 import { getAdminLocale } from "@/lib/i18n-server";
 
@@ -17,7 +18,10 @@ export default async function AdminCompanyPage({ searchParams }: CompanyPageProp
   const publishStatusOptions = getAdminPublishStatusOptions(locale);
   const [{ status, error }, company] = await Promise.all([
     searchParams,
-    db.companyProfile.findFirst({ orderBy: { createdAt: "asc" } }),
+    db.companyProfile.findFirst({
+      orderBy: { createdAt: "asc" },
+      include: { translations: { orderBy: { locale: "asc" } } },
+    }),
   ]);
 
   return (
@@ -103,6 +107,22 @@ export default async function AdminCompanyPage({ searchParams }: CompanyPageProp
             <AdminField label={dictionary.common.seoDescription}>
               <textarea name="seoDescription" defaultValue={company?.seoDescription ?? ""} className="min-h-24 rounded-2xl border border-[var(--line)] px-4 py-3" />
             </AdminField>
+          </div>
+          <div className="lg:col-span-2">
+            <AdminTranslationFields
+              title={dictionary.common.translations}
+              description={dictionary.common.translationsDescription}
+              translations={company?.translations}
+              fields={[
+                { name: "companyName", label: dictionary.companyPage.companyName },
+                { name: "tagline", label: dictionary.companyPage.tagline },
+                { name: "summary", label: dictionary.common.summary, kind: "textarea" },
+                { name: "description", label: dictionary.common.descriptionField, kind: "textarea" },
+                { name: "logoImageAlt", label: dictionary.common.imageAlt },
+                { name: "seoTitle", label: dictionary.common.seoTitle },
+                { name: "seoDescription", label: dictionary.common.seoDescription, kind: "textarea" },
+              ]}
+            />
           </div>
           <div className="lg:col-span-2">
             <button type="submit" className="inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--accent)] bg-[var(--accent)] px-5 text-sm font-medium text-white">

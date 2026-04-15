@@ -84,6 +84,10 @@ export function getAdminDictionary(locale: Locale) {
       email: isZh ? "邮箱" : "Email",
       phone: isZh ? "电话" : "Phone",
       imageAlt: isZh ? "图片 Alt" : "Image alt",
+      translations: isZh ? "多语言内容" : "Localized content",
+      translationsDescription: isZh
+        ? "请把已翻译好的内容填入对应语言。留空时，该语言前台会回退到主内容。"
+        : "Enter already-translated content for each language. Empty fields fall back to the primary content on the public site.",
       saveAction: isZh ? "保存" : "Save",
       deleteAction: isZh ? "删除" : "Delete",
     },

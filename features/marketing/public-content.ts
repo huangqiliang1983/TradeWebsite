@@ -98,8 +98,6 @@ export type PublishedBlogPost = {
 };
 
 const publicTranslationStatuses: TranslationStatus[] = [
-  "MACHINE_TRANSLATED",
-  "REVIEWED",
   "PUBLISHED",
 ];
 

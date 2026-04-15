@@ -22,7 +22,14 @@ import {
   parseLineList,
   parseSpecificationLines,
 } from "@/features/admin/utils";
-import { generateEntityTranslations } from "@/features/admin/translations";
+import {
+  saveBlogPostTranslations,
+  saveCompanyProfileTranslations,
+  saveFaqTranslations,
+  saveIndustryPageTranslations,
+  saveProductCategoryTranslations,
+  saveProductTranslations,
+} from "@/features/admin/translations";
 
 function buildRedirect(path: string, params: Record<string, string | undefined>) {
   const searchParams = new URLSearchParams();
@@ -118,46 +125,6 @@ async function revalidateFaqTargets({
   }
 }
 
-async function generateTranslationDrafts({
-  entityType,
-  entityId,
-  actorEmail,
-}: {
-  entityType:
-    | "CompanyProfile"
-    | "ProductCategory"
-    | "Product"
-    | "IndustryPage"
-    | "BlogPost"
-    | "FAQ";
-  entityId: string;
-  actorEmail: string;
-}) {
-  try {
-    const result = await generateEntityTranslations({ entityType, entityId });
-
-    if (result.generated > 0) {
-      await createAuditLog({
-        action: "generate_translations",
-        entityType,
-        entityId,
-        actorEmail,
-        details: {
-          generatedLocales: result.generated,
-          skipped: result.skipped,
-        },
-      });
-    }
-  } catch {
-    await createAuditLog({
-      action: "generate_translations_failed",
-      entityType,
-      entityId,
-      actorEmail,
-    });
-  }
-}
-
 export async function saveCompanyProfileAction(formData: FormData) {
   const session = await requireAdminWriter();
   const id = getFormString(formData, "id");
@@ -246,11 +213,7 @@ export async function saveCompanyProfileAction(formData: FormData) {
       },
     });
 
-    await generateTranslationDrafts({
-      entityType: "CompanyProfile",
-      entityId: record.id,
-      actorEmail: session.email,
-    });
+    await saveCompanyProfileTranslations(formData, record.id);
 
     revalidatePublishedSiteShell();
     savedRecordId = record.id;
@@ -330,11 +293,7 @@ export async function saveProductCategoryAction(formData: FormData) {
     },
   });
 
-  await generateTranslationDrafts({
-    entityType: "ProductCategory",
-    entityId: record.id,
-    actorEmail: session.email,
-  });
+  await saveProductCategoryTranslations(formData, record.id);
 
   revalidatePublishedEntity({
     entityType: "ProductCategory",
@@ -466,11 +425,7 @@ export async function saveProductAction(formData: FormData) {
       },
     });
 
-    await generateTranslationDrafts({
-      entityType: "Product",
-      entityId: record.id,
-      actorEmail: session.email,
-    });
+    await saveProductTranslations(formData, record.id);
 
     revalidatePublishedEntity({
       entityType: "Product",
@@ -602,11 +557,7 @@ export async function saveIndustryPageAction(formData: FormData) {
       },
     });
 
-    await generateTranslationDrafts({
-      entityType: "IndustryPage",
-      entityId: record.id,
-      actorEmail: session.email,
-    });
+    await saveIndustryPageTranslations(formData, record.id);
 
     revalidatePublishedEntity({
       entityType: "IndustryPage",
@@ -737,11 +688,7 @@ export async function saveBlogPostAction(formData: FormData) {
       },
     });
 
-    await generateTranslationDrafts({
-      entityType: "BlogPost",
-      entityId: record.id,
-      actorEmail: session.email,
-    });
+    await saveBlogPostTranslations(formData, record.id);
 
     revalidatePublishedEntity({
       entityType: "BlogPost",
@@ -857,11 +804,7 @@ export async function saveFaqAction(formData: FormData) {
     },
   });
 
-  await generateTranslationDrafts({
-    entityType: "FAQ",
-    entityId: record.id,
-    actorEmail: session.email,
-  });
+  await saveFaqTranslations(formData, record.id);
 
   await revalidateFaqTargets({
     productId: record.productId,
