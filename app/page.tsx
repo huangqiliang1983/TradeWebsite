@@ -196,75 +196,88 @@ export default async function Home() {
         </Container>
       </Section>
 
-      {/* 📦 PRODUCTS SECTION */}
-      <Section className="bg-zinc-900">
-        <Container>
-          <div className="mb-16">
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[var(--accent)]">{dictionary.home.productsEyebrow}</p>
-            <h2 className="mt-4 text-4xl font-black text-white sm:text-5xl uppercase">{dictionary.home.productsTitle}</h2>
-          </div>
-          <div className="grid gap-6">
-            {featuredProducts.map((product) => (
-              <article
-                key={product.slug}
-                className="group flex flex-col md:flex-row industrial-border rounded-xl overflow-hidden hover:border-[var(--accent)] transition-all"
-              >
-                <div className="p-8 flex-1">
-                  <span className="text-xs font-bold uppercase tracking-widest text-[var(--accent)]">{product.category}</span>
-                  <h3 className="mt-2 text-3xl font-bold text-white uppercase group-hover:text-[var(--accent)] transition-colors">
-                    <Link href={withLocalePath(locale, `/products/${product.slug}`)}>
-                      {product.name}
+      {featuredProducts.length > 0 ? (
+        <Section className="bg-zinc-900">
+          <Container>
+            <div className="mb-16">
+              <p className="text-sm font-bold uppercase tracking-[0.3em] text-[var(--accent)]">
+                {dictionary.home.productsEyebrow}
+              </p>
+              <h2 className="mt-4 text-4xl font-black uppercase text-white sm:text-5xl">
+                {dictionary.home.productsTitle}
+              </h2>
+            </div>
+            <div className="grid gap-6">
+              {featuredProducts.map((product) => (
+                <article
+                  key={product.slug}
+                  className="group flex flex-col overflow-hidden rounded-xl transition-all hover:border-[var(--accent)] md:flex-row industrial-border"
+                >
+                  <div className="flex-1 p-8">
+                    <span className="text-xs font-bold uppercase tracking-widest text-[var(--accent)]">
+                      {product.category}
+                    </span>
+                    <h3 className="mt-2 text-3xl font-bold uppercase text-white transition-colors group-hover:text-[var(--accent)]">
+                      <Link href={withLocalePath(locale, `/products/${product.slug}`)}>
+                        {product.name}
+                      </Link>
+                    </h3>
+                    <p className="mt-6 max-w-2xl leading-relaxed text-zinc-400">
+                      {product.description}
+                    </p>
+                  </div>
+                  <div className="flex w-full flex-col justify-center space-y-4 border-t border-white/5 bg-black/40 p-8 md:w-72 md:border-l md:border-t-0">
+                    <div className="flex justify-between text-sm">
+                      <span className="font-bold uppercase text-zinc-500">{dictionary.home.moq}</span>
+                      <span className="font-bold text-white">{product.moq}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="font-bold uppercase text-zinc-500">
+                        {dictionary.home.leadTime}
+                      </span>
+                      <span className="font-bold text-white">{product.leadTime}</span>
+                    </div>
+                    <Link
+                      href={withLocalePath(locale, `/products/${product.slug}`)}
+                      className="mt-4 block w-full border border-[var(--accent)] py-3 text-center text-xs font-bold uppercase tracking-widest text-[var(--accent)] transition hover:bg-[var(--accent)] hover:text-black"
+                    >
+                      {dictionary.products.openDetail}
+                    </Link>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </Container>
+        </Section>
+      ) : null}
+
+      {featuredIndustries.length > 0 ? (
+        <Section className="bg-zinc-950">
+          <Container>
+            <div className="mb-16 text-center">
+              <h2 className="text-4xl font-black uppercase text-white sm:text-5xl">
+                {dictionary.home.industryTitle}
+              </h2>
+            </div>
+            <div className="grid gap-8 md:grid-cols-3">
+              {featuredIndustries.map((industry) => (
+                <article
+                  key={industry.slug}
+                  className="group relative border-t border-white/10 pt-8 transition-colors hover:border-[var(--accent)]"
+                >
+                  <h3 className="mb-4 text-2xl font-bold uppercase text-white group-hover:text-[var(--accent)]">
+                    <Link href={withLocalePath(locale, `/industries/${industry.slug}`)}>
+                      {industry.name}
                     </Link>
                   </h3>
-                  <p className="mt-6 text-zinc-400 leading-relaxed max-w-2xl">
-                    {product.description}
-                  </p>
-                </div>
-                <div className="w-full md:w-72 bg-black/40 p-8 border-t md:border-t-0 md:border-l border-white/5 flex flex-col justify-center space-y-4">
-                   <div className="flex justify-between text-sm">
-                      <span className="text-zinc-500 font-bold uppercase">{dictionary.home.moq}</span>
-                      <span className="text-white font-bold">{product.moq}</span>
-                   </div>
-                   <div className="flex justify-between text-sm">
-                      <span className="text-zinc-500 font-bold uppercase">{dictionary.home.leadTime}</span>
-                      <span className="text-white font-bold">{product.leadTime}</span>
-                   </div>
-                  <Link
-                    href={withLocalePath(locale, `/products/${product.slug}`)}
-                    className="mt-4 block w-full py-3 border border-[var(--accent)] text-center text-[var(--accent)] font-bold uppercase text-xs tracking-widest hover:bg-[var(--accent)] hover:text-black transition"
-                  >
-                    {dictionary.products.openDetail}
-                  </Link>
-                </div>
-              </article>
-            ))}
-          </div>
-        </Container>
-      </Section>
-
-      {/* 🔗 INDUSTRIES SECTION */}
-      <Section className="bg-zinc-950">
-        <Container>
-          <div className="mb-16 text-center">
-            <h2 className="text-4xl font-black text-white sm:text-5xl uppercase">{dictionary.home.industryTitle}</h2>
-          </div>
-          <div className="grid gap-8 md:grid-cols-3">
-            {featuredIndustries.map((industry) => (
-              <article key={industry.slug} className="group relative pt-8 border-t border-white/10 hover:border-[var(--accent)] transition-colors">
-                <h3 className="text-2xl font-bold text-white mb-4 uppercase group-hover:text-[var(--accent)]">
-                  <Link href={withLocalePath(locale, `/industries/${industry.slug}`)}>
-                    {industry.name}
-                  </Link>
-                </h3>
-                <p className="text-zinc-500 leading-relaxed text-sm">
-                  {industry.summary}
-                </p>
-                <div className="mt-6 h-1 w-0 bg-[var(--accent)] group-hover:w-full transition-all duration-500" />
-              </article>
-            ))}
-          </div>
-        </Container>
-      </Section>
+                  <p className="text-sm leading-relaxed text-zinc-500">{industry.summary}</p>
+                  <div className="mt-6 h-1 w-0 bg-[var(--accent)] transition-all duration-500 group-hover:w-full" />
+                </article>
+              ))}
+            </div>
+          </Container>
+        </Section>
+      ) : null}
 
       {localizedFaq.length > 0 ? (
         <Section className="bg-[var(--surface)]">

@@ -25,17 +25,28 @@ export async function CTAGroup({
 }: CTAGroupProps) {
   const company = await getPublishedCompanyProfile(locale);
   const dictionary = getMarketingDictionary(locale);
+  const isAccentPanel = tone === "dark";
 
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
       <Link
-        className={buttonStyles({ variant: "primary", size: "lg" })}
+        className={buttonStyles({
+          variant: "primary",
+          size: "lg",
+          className: isAccentPanel ? "border-black bg-black text-white hover:shadow-none" : "",
+        })}
         href={primaryHref ?? `${withLocalePath(locale, "/contact")}#quote`}
       >
         {primaryLabel ?? dictionary.cta.requestQuote}
       </Link>
       <Link
-        className={buttonStyles({ variant: "secondary", size: "lg" })}
+        className={buttonStyles({
+          variant: "secondary",
+          size: "lg",
+          className: isAccentPanel
+            ? "border-black/25 bg-transparent text-black hover:border-black hover:bg-black hover:text-white"
+            : "",
+        })}
         href={secondaryHref ?? withLocalePath(locale, "/contact")}
       >
         {secondaryLabel ?? dictionary.cta.contactUs}
@@ -46,8 +57,8 @@ export async function CTAGroup({
           size: "lg",
           className:
             "justify-start text-[10px] font-black uppercase tracking-widest sm:justify-center " +
-            (tone === "dark"
-              ? "text-white/60 hover:bg-white/10 hover:text-white"
+            (isAccentPanel
+              ? "text-black/70 hover:bg-black/10 hover:text-black"
               : "text-[var(--foreground)] hover:bg-[var(--surface-strong)]"),
         })}
         href={company.whatsapp}
@@ -62,8 +73,8 @@ export async function CTAGroup({
           size: "lg",
           className:
             "justify-start text-[10px] font-black uppercase tracking-widest sm:justify-center " +
-            (tone === "dark"
-              ? "text-white/60 hover:bg-white/10 hover:text-white"
+            (isAccentPanel
+              ? "text-black/70 hover:bg-black/10 hover:text-black"
               : "text-[var(--foreground)] hover:bg-[var(--surface-strong)]"),
         })}
         href={`mailto:${company.email}`}
