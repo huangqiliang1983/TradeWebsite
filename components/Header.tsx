@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -8,15 +9,27 @@ import { LanguageSwitch } from "@/components/LanguageSwitch";
 import { buttonStyles } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { getMarketingDictionary } from "@/features/marketing/copy";
+import type { PublishedCompanyProfile } from "@/features/marketing/public-content";
 import { getLocaleFromPathname, withLocalePath } from "@/lib/i18n";
 import { cx } from "@/lib/utils";
 
-export function Header() {
+function getBrandInitials(companyName: string) {
+  return companyName
+    .split(/\s+/)
+    .map((word) => word[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+}
+
+export function Header({ company }: { company: PublishedCompanyProfile }) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const locale = getLocaleFromPathname(pathname);
   const dictionary = getMarketingDictionary(locale);
   const homeHref = withLocalePath(locale, "/");
+  const initials = getBrandInitials(company.companyName) || "B2";
+  const hasUploadedLogo = company.logoImage && !company.logoImage.startsWith("/brand/");
 
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--line)] bg-[rgba(248,244,237,0.9)] backdrop-blur">
@@ -27,12 +40,22 @@ export function Header() {
             className="flex items-center gap-3 text-[var(--foreground)]"
             onClick={() => setIsOpen(false)}
           >
-            <span className="flex h-11 w-11 items-center justify-center rounded-full border border-[var(--accent)] bg-[var(--accent)] text-sm font-semibold uppercase tracking-[0.24em] text-white">
-              RE
+            <span className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--accent)] bg-[var(--accent)] text-sm font-semibold uppercase tracking-[0.18em] text-white">
+              {hasUploadedLogo ? (
+                <Image
+                  src={company.logoImage}
+                  alt={company.logoImageAlt}
+                  fill
+                  sizes="44px"
+                  className="object-cover"
+                />
+              ) : (
+                initials
+              )}
             </span>
             <span className="block">
               <span className="block font-heading text-lg tracking-[0.12em]">
-                Remember Everything
+                {company.companyName}
               </span>
               <span className="block text-xs uppercase tracking-[0.24em] text-[var(--muted)]">
                 {dictionary.brandSubtitle}

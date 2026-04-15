@@ -72,7 +72,7 @@ export default async function RootLayout({
         >
           Skip to content
         </a>
-        <Header />
+        <Header company={company} />
         <main id="main-content" className="flex min-h-[60vh] flex-1 flex-col">
           {children}
         </main>
