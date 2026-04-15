@@ -40,23 +40,24 @@ export async function Footer({
   };
 
   return (
-    <footer className="border-t border-[rgba(255,255,255,0.08)] bg-[var(--charcoal)] text-white">
-      <Container className="py-12 md:py-16">
-        <div className="grid gap-10 md:grid-cols-2 xl:grid-cols-[1.35fr_0.75fr_0.75fr_0.75fr]">
-          <div className="space-y-5">
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--accent-soft)]">
-              {dictionary.footer.eyebrow}
-            </p>
-            <h2 className="max-w-lg text-3xl leading-tight text-white sm:text-4xl">
-              {dictionary.footer.title}
-            </h2>
-            <p className="max-w-lg text-base leading-8 text-white/72">
+    <footer className="relative overflow-hidden border-t border-white/5 bg-black text-white">
+      <div className="texture-grid-dark pointer-events-none absolute inset-0 opacity-20" />
+      <Container className="relative py-16 lg:py-24">
+        <div className="grid gap-16 md:grid-cols-2 xl:grid-cols-[1.5fr_0.75fr_0.75fr_0.75fr]">
+          <div className="space-y-8">
+            <Link href={withLocalePath(locale, "/")} className="inline-flex items-center gap-3">
+               <span className="h-10 w-10 flex items-center justify-center rounded-md border border-white/20 bg-zinc-900 text-sm font-black text-[var(--accent)] uppercase tracking-tighter">
+                  {company.companyName.slice(0, 2)}
+               </span>
+               <span className="font-heading text-xl font-black uppercase tracking-tight">{company.companyName}</span>
+            </Link>
+            <p className="max-w-md text-base leading-8 text-zinc-500">
               {company.summary}
             </p>
-            <div className="space-y-2 border-l border-white/12 pl-4 text-sm text-white/72">
-              <p>{company.address}</p>
-              <p>{company.phone}</p>
-              <p>{company.email}</p>
+            <div className="space-y-4 border-l-2 border-[var(--accent)]/30 pl-6 text-sm text-zinc-400 font-medium">
+              <p className="hover:text-white transition-colors capitalize">{company.address}</p>
+              <p className="hover:text-white transition-colors">{company.phone}</p>
+              <p className="hover:text-white transition-colors">{company.email}</p>
             </div>
           </div>
 
@@ -65,10 +66,11 @@ export async function Footer({
           <FooterGroup title={dictionary.footer.conversions} items={footerNavigation.conversion} />
         </div>
 
-        <div className="mt-12 border-t border-white/10 pt-6 text-sm text-white/56">
+        <div className="mt-20 flex flex-col items-center justify-between gap-6 border-t border-white/5 pt-10 text-xs font-bold uppercase tracking-widest text-zinc-600 md:flex-row">
           <p>
-            © {new Date().getFullYear()} {company.companyName || siteConfig.companyName}. {dictionary.footer.copyright}
+            © {new Date().getFullYear()} {company.companyName || siteConfig.companyName}.
           </p>
+          <p>{dictionary.footer.copyright}</p>
         </div>
       </Container>
     </footer>
@@ -84,15 +86,15 @@ function FooterGroup({
 }) {
   return (
     <div>
-      <h3 className="text-sm font-semibold uppercase tracking-[0.24em] text-white/54">
+      <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[var(--accent)]">
         {title}
       </h3>
-      <ul className="mt-4 space-y-3 text-sm text-white/72">
+      <ul className="mt-8 space-y-4">
         {items.map((item) => (
           <li key={item.href}>
             <Link
               href={item.href}
-              className="transition hover:text-[var(--accent-soft)]"
+              className="text-sm font-bold text-zinc-400 transition hover:text-white hover:translate-x-1 inline-block"
               target={item.href.startsWith("http") ? "_blank" : undefined}
               rel={item.href.startsWith("http") ? "noreferrer noopener" : undefined}
             >

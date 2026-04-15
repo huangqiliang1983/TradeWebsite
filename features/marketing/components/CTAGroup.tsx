@@ -45,9 +45,10 @@ export async function CTAGroup({
           variant: "ghost",
           size: "lg",
           className:
-            tone === "dark"
-              ? "justify-start text-white/76 hover:bg-white/10 hover:text-white sm:justify-center"
-              : "justify-start sm:justify-center",
+            "justify-start text-[10px] font-black uppercase tracking-widest sm:justify-center " +
+            (tone === "dark"
+              ? "text-white/60 hover:bg-white/10 hover:text-white"
+              : "text-[var(--foreground)] hover:bg-[var(--surface-strong)]"),
         })}
         href={company.whatsapp}
         target="_blank"
@@ -60,9 +61,10 @@ export async function CTAGroup({
           variant: "ghost",
           size: "lg",
           className:
-            tone === "dark"
-              ? "justify-start text-white/76 hover:bg-white/10 hover:text-white sm:justify-center"
-              : "justify-start sm:justify-center",
+            "justify-start text-[10px] font-black uppercase tracking-widest sm:justify-center " +
+            (tone === "dark"
+              ? "text-white/60 hover:bg-white/10 hover:text-white"
+              : "text-[var(--foreground)] hover:bg-[var(--surface-strong)]"),
         })}
         href={`mailto:${company.email}`}
       >
