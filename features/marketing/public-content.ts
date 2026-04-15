@@ -1,4 +1,4 @@
-import type { Prisma } from "@prisma/client";
+import type { Prisma, TranslationStatus } from "@prisma/client";
 
 import { unstable_cache } from "next/cache";
 
@@ -13,6 +13,7 @@ import {
   industries as fallbackIndustries,
   products as fallbackProducts,
 } from "@/features/marketing/content";
+import type { Locale } from "@/lib/i18n";
 import { siteConfig } from "@/lib/site";
 
 export type MarketingSection = {
@@ -94,6 +95,16 @@ export type PublishedBlogPost = {
   seoTitle?: string | null;
   seoDescription?: string | null;
   seoCanonical?: string | null;
+};
+
+const publicTranslationStatuses: TranslationStatus[] = [
+  "MACHINE_TRANSLATED",
+  "REVIEWED",
+  "PUBLISHED",
+];
+
+const publicTranslationStatusFilter = {
+  in: publicTranslationStatuses,
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -271,97 +282,139 @@ function createFallbackBlogPost(slug: string): PublishedBlogPost | null {
   };
 }
 
-export const getPublishedCompanyProfile = unstable_cache(
-  async (): Promise<PublishedCompanyProfile> => {
-    try {
-      const company = await db.companyProfile.findFirst({
-        where: { publishStatus: "PUBLISHED" },
-        orderBy: { updatedAt: "desc" },
-      });
+export async function getPublishedCompanyProfile(
+  locale: Locale = "en",
+): Promise<PublishedCompanyProfile> {
+  return unstable_cache(
+    async (): Promise<PublishedCompanyProfile> => {
+      try {
+        const company = await db.companyProfile.findFirst({
+          where: { publishStatus: "PUBLISHED" },
+          orderBy: { updatedAt: "desc" },
+          include: {
+            translations: {
+              where: {
+                locale,
+                translationStatus: publicTranslationStatusFilter,
+              },
+              take: 1,
+            },
+          },
+        });
+        const translation = company?.translations[0];
 
-      return {
-        companyName: company?.companyName ?? siteConfig.companyName,
-        tagline:
-          company?.tagline ?? "Dependable OEM and export execution for global buyers",
-        summary: company?.summary ?? siteConfig.description,
-        description: company?.description ?? siteConfig.description,
-        logoImage: company?.logoImage ?? "/brand/site-preview.svg",
-        logoImageAlt:
-          company?.logoImageAlt ?? `${siteConfig.companyName} visual identity`,
-        email: company?.email ?? siteConfig.email,
-        phone: company?.phone ?? siteConfig.phone,
-        whatsapp: company?.whatsapp ?? siteConfig.whatsapp,
-        address:
-          formatAddress([
-            company?.addressLine1,
-            company?.addressLine2,
-            company?.city,
-            company?.state,
-            company?.country,
-            company?.postalCode,
-          ]) || siteConfig.address,
-        seoTitle: company?.seoTitle ?? siteConfig.name,
-        seoDescription: company?.seoDescription ?? siteConfig.description,
-        seoCanonical: company?.seoCanonical ?? siteConfig.url,
-      };
-    } catch {
-      return {
-        companyName: siteConfig.companyName,
-        tagline: "Dependable OEM and export execution for global buyers",
-        summary: siteConfig.description,
-        description: siteConfig.description,
-        logoImage: "/brand/site-preview.svg",
-        logoImageAlt: `${siteConfig.companyName} visual identity`,
-        email: siteConfig.email,
-        phone: siteConfig.phone,
-        whatsapp: siteConfig.whatsapp,
-        address: siteConfig.address,
-        seoTitle: siteConfig.name,
-        seoDescription: siteConfig.description,
-        seoCanonical: siteConfig.url,
-      };
-    }
-  },
-  ["published-company-profile"],
-  {
-    tags: [publicCacheTags.site, publicCacheTags.company],
-    revalidate: PUBLIC_REVALIDATE_SECONDS,
-  },
-);
+        return {
+          companyName:
+            translation?.companyName ?? company?.companyName ?? siteConfig.companyName,
+          tagline:
+            translation?.tagline ??
+            company?.tagline ??
+            "Dependable OEM and export execution for global buyers",
+          summary:
+            translation?.summary ?? company?.summary ?? siteConfig.description,
+          description:
+            translation?.description ??
+            company?.description ??
+            siteConfig.description,
+          logoImage: company?.logoImage ?? "/brand/site-preview.svg",
+          logoImageAlt:
+            translation?.logoImageAlt ??
+            company?.logoImageAlt ??
+            `${siteConfig.companyName} visual identity`,
+          email: company?.email ?? siteConfig.email,
+          phone: company?.phone ?? siteConfig.phone,
+          whatsapp: company?.whatsapp ?? siteConfig.whatsapp,
+          address:
+            formatAddress([
+              company?.addressLine1,
+              company?.addressLine2,
+              company?.city,
+              company?.state,
+              company?.country,
+              company?.postalCode,
+            ]) || siteConfig.address,
+          seoTitle: translation?.seoTitle ?? company?.seoTitle ?? siteConfig.name,
+          seoDescription:
+            translation?.seoDescription ??
+            company?.seoDescription ??
+            siteConfig.description,
+          seoCanonical: company?.seoCanonical ?? siteConfig.url,
+        };
+      } catch {
+        return {
+          companyName: siteConfig.companyName,
+          tagline: "Dependable OEM and export execution for global buyers",
+          summary: siteConfig.description,
+          description: siteConfig.description,
+          logoImage: "/brand/site-preview.svg",
+          logoImageAlt: `${siteConfig.companyName} visual identity`,
+          email: siteConfig.email,
+          phone: siteConfig.phone,
+          whatsapp: siteConfig.whatsapp,
+          address: siteConfig.address,
+          seoTitle: siteConfig.name,
+          seoDescription: siteConfig.description,
+          seoCanonical: siteConfig.url,
+        };
+      }
+    },
+    [`published-company-profile-${locale}`],
+    {
+      tags: [publicCacheTags.site, publicCacheTags.company],
+      revalidate: PUBLIC_REVALIDATE_SECONDS,
+    },
+  )();
+}
 
-export const getPublishedHomeFaq = unstable_cache(
-  async (): Promise<MarketingFaqItem[]> => {
-    try {
-      const faqs = await db.fAQ.findMany({
-        where: {
-          publishStatus: "PUBLISHED",
-          productId: null,
-          industryPageId: null,
-          blogPostId: null,
-        },
-        orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
-        select: {
-          question: true,
-          answer: true,
-        },
-      });
+export async function getPublishedHomeFaq(
+  locale: Locale = "en",
+): Promise<MarketingFaqItem[]> {
+  return unstable_cache(
+    async (): Promise<MarketingFaqItem[]> => {
+      try {
+        const faqs = await db.fAQ.findMany({
+          where: {
+            publishStatus: "PUBLISHED",
+            productId: null,
+            industryPageId: null,
+            blogPostId: null,
+          },
+          orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+          select: {
+            question: true,
+            answer: true,
+            translations: {
+              where: {
+                locale,
+                translationStatus: publicTranslationStatusFilter,
+              },
+              take: 1,
+              select: {
+                question: true,
+                answer: true,
+              },
+            },
+          },
+        });
 
-      return faqs.map((faq) => ({
-        question: faq.question,
-        answer: faq.answer,
-      }));
-    } catch {
-      return fallbackHomeFaq;
-    }
-  },
-  ["published-home-faq"],
-  {
-    tags: [publicCacheTags.home, publicCacheTags.faq],
-    revalidate: PUBLIC_REVALIDATE_SECONDS,
-  },
-);
+        return faqs.map((faq) => ({
+          question: faq.translations[0]?.question ?? faq.question,
+          answer: faq.translations[0]?.answer ?? faq.answer,
+        }));
+      } catch {
+        return fallbackHomeFaq;
+      }
+    },
+    [`published-home-faq-${locale}`],
+    {
+      tags: [publicCacheTags.home, publicCacheTags.faq],
+      revalidate: PUBLIC_REVALIDATE_SECONDS,
+    },
+  )();
+}
 
-export const getPublishedProducts = unstable_cache(
+export async function getPublishedProducts(locale: Locale = "en"): Promise<PublishedProduct[]> {
+  return unstable_cache(
   async (): Promise<PublishedProduct[]> => {
     try {
       const products = await db.product.findMany({
@@ -371,7 +424,24 @@ export const getPublishedProducts = unstable_cache(
           category: {
             select: {
               name: true,
+              translations: {
+                where: {
+                  locale,
+                  translationStatus: publicTranslationStatusFilter,
+                },
+                take: 1,
+                select: {
+                  name: true,
+                },
+              },
             },
+          },
+          translations: {
+            where: {
+              locale,
+              translationStatus: publicTranslationStatusFilter,
+            },
+            take: 1,
           },
           faqs: {
             where: { publishStatus: "PUBLISHED" },
@@ -379,35 +449,60 @@ export const getPublishedProducts = unstable_cache(
             select: {
               question: true,
               answer: true,
+              translations: {
+                where: {
+                  locale,
+                  translationStatus: publicTranslationStatusFilter,
+                },
+                take: 1,
+                select: {
+                  question: true,
+                  answer: true,
+                },
+              },
             },
           },
         },
       });
 
-      return products.map((product) => ({
+      return products.map((product) => {
+        const translation = product.translations[0];
+
+        return {
         id: product.id,
         slug: product.slug,
-        name: product.name,
-        category: product.category?.name ?? "General Product",
-        description: product.summary ?? product.name,
-        intro: product.description ?? product.summary ?? product.name,
-        heroTitle: product.heroTitle ?? product.name,
+        name: translation?.name ?? product.name,
+        category:
+          product.category?.translations[0]?.name ??
+          product.category?.name ??
+          "General Product",
+        description: translation?.summary ?? product.summary ?? product.name,
+        intro:
+          translation?.description ??
+          product.description ??
+          product.summary ??
+          product.name,
+        heroTitle: translation?.heroTitle ?? product.heroTitle ?? product.name,
         heroImage: product.heroImage ?? "/brand/product-blueprint.svg",
-        heroImageAlt: product.heroImageAlt ?? `${product.name} product image`,
+        heroImageAlt:
+          translation?.heroImageAlt ??
+          product.heroImageAlt ??
+          `${product.name} product image`,
         sku: product.sku ?? "Available on request",
         leadTime: product.leadTime ?? "Quoted per program",
         moq: product.moq ?? "Quoted per program",
-        sellingPoints: asStringList(product.sellingPoints),
-        specifications: asSpecifications(product.specifications),
+        sellingPoints: asStringList(translation?.sellingPoints ?? product.sellingPoints),
+        specifications: asSpecifications(translation?.specifications ?? product.specifications),
         faq: product.faqs.map((faq) => ({
-          question: faq.question,
-          answer: faq.answer,
+          question: faq.translations[0]?.question ?? faq.question,
+          answer: faq.translations[0]?.answer ?? faq.answer,
         })),
-        seoTitle: product.seoTitle,
-        seoDescription: product.seoDescription,
+        seoTitle: translation?.seoTitle ?? product.seoTitle,
+        seoDescription: translation?.seoDescription ?? product.seoDescription,
         seoCanonical: product.seoCanonical,
         updatedAt: product.updatedAt.toISOString(),
-      }));
+        };
+      });
     } catch {
       return fallbackProducts.map((product) => ({
         id: `fallback-product-${product.slug}`,
@@ -432,14 +527,15 @@ export const getPublishedProducts = unstable_cache(
       }));
     }
   },
-  ["published-products"],
+  [`published-products-${locale}`],
   {
     tags: [publicCacheTags.home, publicCacheTags.products],
     revalidate: PUBLIC_REVALIDATE_SECONDS,
   },
-);
+  )();
+}
 
-export async function getPublishedProductBySlug(slug: string) {
+export async function getPublishedProductBySlug(slug: string, locale: Locale = "en") {
   return unstable_cache(
     async (): Promise<PublishedProduct | null> => {
       try {
@@ -452,7 +548,24 @@ export async function getPublishedProductBySlug(slug: string) {
             category: {
               select: {
                 name: true,
+                translations: {
+                  where: {
+                    locale,
+                    translationStatus: publicTranslationStatusFilter,
+                  },
+                  take: 1,
+                  select: {
+                    name: true,
+                  },
+                },
               },
+            },
+            translations: {
+              where: {
+                locale,
+                translationStatus: publicTranslationStatusFilter,
+              },
+              take: 1,
             },
             faqs: {
               where: { publishStatus: "PUBLISHED" },
@@ -460,6 +573,17 @@ export async function getPublishedProductBySlug(slug: string) {
               select: {
                 question: true,
                 answer: true,
+                translations: {
+                  where: {
+                    locale,
+                    translationStatus: publicTranslationStatusFilter,
+                  },
+                  take: 1,
+                  select: {
+                    question: true,
+                    answer: true,
+                  },
+                },
               },
             },
           },
@@ -469,27 +593,39 @@ export async function getPublishedProductBySlug(slug: string) {
           return null;
         }
 
+        const translation = product.translations[0];
+
         return {
           id: product.id,
           slug: product.slug,
-          name: product.name,
-          category: product.category?.name ?? "General Product",
-          description: product.summary ?? product.name,
-          intro: product.description ?? product.summary ?? product.name,
-          heroTitle: product.heroTitle ?? product.name,
+          name: translation?.name ?? product.name,
+          category:
+            product.category?.translations[0]?.name ??
+            product.category?.name ??
+            "General Product",
+          description: translation?.summary ?? product.summary ?? product.name,
+          intro:
+            translation?.description ??
+            product.description ??
+            product.summary ??
+            product.name,
+          heroTitle: translation?.heroTitle ?? product.heroTitle ?? product.name,
           heroImage: product.heroImage ?? "/brand/product-blueprint.svg",
-          heroImageAlt: product.heroImageAlt ?? `${product.name} product image`,
+          heroImageAlt:
+            translation?.heroImageAlt ??
+            product.heroImageAlt ??
+            `${product.name} product image`,
           sku: product.sku ?? "Available on request",
           leadTime: product.leadTime ?? "Quoted per program",
           moq: product.moq ?? "Quoted per program",
-          sellingPoints: asStringList(product.sellingPoints),
-          specifications: asSpecifications(product.specifications),
+          sellingPoints: asStringList(translation?.sellingPoints ?? product.sellingPoints),
+          specifications: asSpecifications(translation?.specifications ?? product.specifications),
           faq: product.faqs.map((faq) => ({
-            question: faq.question,
-            answer: faq.answer,
+            question: faq.translations[0]?.question ?? faq.question,
+            answer: faq.translations[0]?.answer ?? faq.answer,
           })),
-          seoTitle: product.seoTitle,
-          seoDescription: product.seoDescription,
+          seoTitle: translation?.seoTitle ?? product.seoTitle,
+          seoDescription: translation?.seoDescription ?? product.seoDescription,
           seoCanonical: product.seoCanonical,
           updatedAt: product.updatedAt.toISOString(),
         };
@@ -497,7 +633,7 @@ export async function getPublishedProductBySlug(slug: string) {
         return createFallbackProduct(slug);
       }
     },
-    [`published-product-${slug}`],
+    [`published-product-${slug}-${locale}`],
     {
       tags: [
         publicCacheTags.products,
@@ -509,28 +645,45 @@ export async function getPublishedProductBySlug(slug: string) {
   )();
 }
 
-export const getPublishedIndustries = unstable_cache(
+export async function getPublishedIndustries(locale: Locale = "en"): Promise<PublishedIndustry[]> {
+  return unstable_cache(
   async (): Promise<PublishedIndustry[]> => {
     try {
       const industries = await db.industryPage.findMany({
         where: { publishStatus: "PUBLISHED" },
         orderBy: [{ updatedAt: "desc" }, { createdAt: "asc" }],
+        include: {
+          translations: {
+            where: {
+              locale,
+              translationStatus: publicTranslationStatusFilter,
+            },
+            take: 1,
+          },
+        },
       });
 
-      return industries.map((industry) => ({
+      return industries.map((industry) => {
+        const translation = industry.translations[0];
+
+        return {
         id: industry.id,
         slug: industry.slug,
-        name: industry.title,
-        summary: industry.summary ?? industry.title,
-        heroTitle: industry.heroTitle ?? industry.title,
+        name: translation?.title ?? industry.title,
+        summary: translation?.summary ?? industry.summary ?? industry.title,
+        heroTitle: translation?.heroTitle ?? industry.heroTitle ?? industry.title,
         image: industry.heroImage ?? "/brand/operations.svg",
-        imageAlt: industry.heroImageAlt ?? `${industry.title} industry illustration`,
-        sections: asSectionList(industry.content),
-        seoTitle: industry.seoTitle,
-        seoDescription: industry.seoDescription,
+        imageAlt:
+          translation?.heroImageAlt ??
+          industry.heroImageAlt ??
+          `${industry.title} industry illustration`,
+        sections: asSectionList(translation?.content ?? industry.content),
+        seoTitle: translation?.seoTitle ?? industry.seoTitle,
+        seoDescription: translation?.seoDescription ?? industry.seoDescription,
         seoCanonical: industry.seoCanonical,
         updatedAt: industry.updatedAt.toISOString(),
-      }));
+        };
+      });
     } catch {
       return fallbackIndustries.map((industry) => ({
         id: `fallback-industry-${industry.slug}`,
@@ -548,14 +701,15 @@ export const getPublishedIndustries = unstable_cache(
       }));
     }
   },
-  ["published-industries"],
+  [`published-industries-${locale}`],
   {
     tags: [publicCacheTags.home, publicCacheTags.industries],
     revalidate: PUBLIC_REVALIDATE_SECONDS,
   },
-);
+  )();
+}
 
-export async function getPublishedIndustryBySlug(slug: string) {
+export async function getPublishedIndustryBySlug(slug: string, locale: Locale = "en") {
   return unstable_cache(
     async (): Promise<PublishedIndustry | null> => {
       try {
@@ -564,24 +718,37 @@ export async function getPublishedIndustryBySlug(slug: string) {
             slug,
             publishStatus: "PUBLISHED",
           },
+          include: {
+            translations: {
+              where: {
+                locale,
+                translationStatus: publicTranslationStatusFilter,
+              },
+              take: 1,
+            },
+          },
         });
 
         if (!industry) {
           return null;
         }
 
+        const translation = industry.translations[0];
+
         return {
           id: industry.id,
           slug: industry.slug,
-          name: industry.title,
-          summary: industry.summary ?? industry.title,
-          heroTitle: industry.heroTitle ?? industry.title,
+          name: translation?.title ?? industry.title,
+          summary: translation?.summary ?? industry.summary ?? industry.title,
+          heroTitle: translation?.heroTitle ?? industry.heroTitle ?? industry.title,
           image: industry.heroImage ?? "/brand/operations.svg",
           imageAlt:
-            industry.heroImageAlt ?? `${industry.title} industry illustration`,
-          sections: asSectionList(industry.content),
-          seoTitle: industry.seoTitle,
-          seoDescription: industry.seoDescription,
+            translation?.heroImageAlt ??
+            industry.heroImageAlt ??
+            `${industry.title} industry illustration`,
+          sections: asSectionList(translation?.content ?? industry.content),
+          seoTitle: translation?.seoTitle ?? industry.seoTitle,
+          seoDescription: translation?.seoDescription ?? industry.seoDescription,
           seoCanonical: industry.seoCanonical,
           updatedAt: industry.updatedAt.toISOString(),
         };
@@ -589,7 +756,7 @@ export async function getPublishedIndustryBySlug(slug: string) {
         return createFallbackIndustry(slug);
       }
     },
-    [`published-industry-${slug}`],
+    [`published-industry-${slug}-${locale}`],
     {
       tags: [publicCacheTags.industries, publicCacheTags.industry(slug)],
       revalidate: PUBLIC_REVALIDATE_SECONDS,
@@ -597,33 +764,47 @@ export async function getPublishedIndustryBySlug(slug: string) {
   )();
 }
 
-export const getPublishedBlogPosts = unstable_cache(
+export async function getPublishedBlogPosts(locale: Locale = "en"): Promise<PublishedBlogPost[]> {
+  return unstable_cache(
   async (): Promise<PublishedBlogPost[]> => {
     try {
       const posts = await db.blogPost.findMany({
         where: { publishStatus: "PUBLISHED" },
         orderBy: [{ publishedAt: "desc" }, { updatedAt: "desc" }],
+        include: {
+          translations: {
+            where: {
+              locale,
+              translationStatus: publicTranslationStatusFilter,
+            },
+            take: 1,
+          },
+        },
       });
 
       return posts.map((post) => {
-        const sections = asSectionList(post.content);
-        const summary = post.excerpt ?? post.title;
+        const translation = post.translations[0];
+        const sections = asSectionList(translation?.content ?? post.content);
+        const summary = translation?.excerpt ?? post.excerpt ?? post.title;
         const publishedAt = post.publishedAt ?? post.updatedAt;
 
         return {
           id: post.id,
           slug: post.slug,
-          title: post.title,
+          title: translation?.title ?? post.title,
           summary,
           category: "Insights",
           readingTime: estimateReadingTime(sections, summary),
           publishedAt: publishedAt.toISOString().slice(0, 10),
           updatedAt: post.updatedAt.toISOString().slice(0, 10),
           image: post.coverImage ?? "/brand/insight-map.svg",
-          imageAlt: post.coverImageAlt ?? `${post.title} article cover image`,
+          imageAlt:
+            translation?.coverImageAlt ??
+            post.coverImageAlt ??
+            `${post.title} article cover image`,
           sections,
-          seoTitle: post.seoTitle,
-          seoDescription: post.seoDescription,
+          seoTitle: translation?.seoTitle ?? post.seoTitle,
+          seoDescription: translation?.seoDescription ?? post.seoDescription,
           seoCanonical: post.seoCanonical,
         };
       });
@@ -646,14 +827,15 @@ export const getPublishedBlogPosts = unstable_cache(
       }));
     }
   },
-  ["published-blog-posts"],
+  [`published-blog-posts-${locale}`],
   {
     tags: [publicCacheTags.home, publicCacheTags.blog],
     revalidate: PUBLIC_REVALIDATE_SECONDS,
   },
-);
+  )();
+}
 
-export async function getPublishedBlogPostBySlug(slug: string) {
+export async function getPublishedBlogPostBySlug(slug: string, locale: Locale = "en") {
   return unstable_cache(
     async (): Promise<PublishedBlogPost | null> => {
       try {
@@ -662,37 +844,50 @@ export async function getPublishedBlogPostBySlug(slug: string) {
             slug,
             publishStatus: "PUBLISHED",
           },
+          include: {
+            translations: {
+              where: {
+                locale,
+                translationStatus: publicTranslationStatusFilter,
+              },
+              take: 1,
+            },
+          },
         });
 
         if (!post) {
           return null;
         }
 
-        const sections = asSectionList(post.content);
-        const summary = post.excerpt ?? post.title;
+        const translation = post.translations[0];
+        const sections = asSectionList(translation?.content ?? post.content);
+        const summary = translation?.excerpt ?? post.excerpt ?? post.title;
         const publishedAt = post.publishedAt ?? post.updatedAt;
 
         return {
           id: post.id,
           slug: post.slug,
-          title: post.title,
+          title: translation?.title ?? post.title,
           summary,
           category: "Insights",
           readingTime: estimateReadingTime(sections, summary),
           publishedAt: publishedAt.toISOString().slice(0, 10),
           updatedAt: post.updatedAt.toISOString().slice(0, 10),
           image: post.coverImage ?? "/brand/insight-map.svg",
-          imageAlt: post.coverImageAlt ?? `${post.title} article cover image`,
+          imageAlt:
+            translation?.coverImageAlt ??
+            post.coverImageAlt ??
+            `${post.title} article cover image`,
           sections,
-          seoTitle: post.seoTitle,
-          seoDescription: post.seoDescription,
+          seoTitle: translation?.seoTitle ?? post.seoTitle,
+          seoDescription: translation?.seoDescription ?? post.seoDescription,
           seoCanonical: post.seoCanonical,
         };
       } catch {
         return createFallbackBlogPost(slug);
       }
     },
-    [`published-blog-post-${slug}`],
+    [`published-blog-post-${slug}-${locale}`],
     {
       tags: [publicCacheTags.blog, publicCacheTags.blogPost(slug)],
       revalidate: PUBLIC_REVALIDATE_SECONDS,

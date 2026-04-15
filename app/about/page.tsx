@@ -24,7 +24,7 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata() {
   const locale = await getRequestLocale();
-  const company = localizeCompany(locale, await getPublishedCompanyProfile());
+  const company = localizeCompany(locale, await getPublishedCompanyProfile(locale));
 
   return buildPageMetadata({
     title:
@@ -50,7 +50,7 @@ export async function generateMetadata() {
 export default async function AboutPage() {
   const locale = await getRequestLocale();
   const dictionary = getMarketingDictionary(locale);
-  const company = localizeCompany(locale, await getPublishedCompanyProfile());
+  const company = localizeCompany(locale, await getPublishedCompanyProfile(locale));
   const homeHref = withLocalePath(locale, "/");
   const aboutHref = withLocalePath(locale, "/about");
   const homeLabel = getHomeLabel(locale);

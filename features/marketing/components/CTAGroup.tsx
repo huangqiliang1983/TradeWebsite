@@ -21,7 +21,7 @@ export async function CTAGroup({
   secondaryHref,
   secondaryLabel,
 }: CTAGroupProps) {
-  const company = await getPublishedCompanyProfile();
+  const company = await getPublishedCompanyProfile(locale);
   const dictionary = getMarketingDictionary(locale);
 
   return (

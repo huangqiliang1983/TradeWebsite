@@ -37,7 +37,7 @@ export async function generateMetadata({
   const locale = await getRequestLocale();
   const dictionary = getMarketingDictionary(locale);
   const { slug } = await params;
-  const product = await getPublishedProductBySlug(slug);
+  const product = await getPublishedProductBySlug(slug, locale);
   const localizedProduct = product ? localizeProduct(locale, product) : null;
 
   if (!localizedProduct) {
@@ -67,7 +67,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
   const productsHref = withLocalePath(locale, "/products");
   const homeLabel = getHomeLabel(locale);
   const { slug } = await params;
-  const product = await getPublishedProductBySlug(slug);
+  const product = await getPublishedProductBySlug(slug, locale);
 
   if (!product) {
     const redirectEntry = await getRedirectForPath(`/products/${slug}`);

@@ -42,7 +42,7 @@ export default async function ProductsPage() {
   const homeHref = withLocalePath(locale, "/");
   const productsHref = withLocalePath(locale, "/products");
   const homeLabel = getHomeLabel(locale);
-  const products = (await getPublishedProducts()).map((product) =>
+  const products = (await getPublishedProducts(locale)).map((product) =>
     localizeProduct(locale, product),
   );
 

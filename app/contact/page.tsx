@@ -41,7 +41,7 @@ export async function generateMetadata() {
 export default async function ContactPage() {
   const locale = await getRequestLocale();
   const dictionary = getMarketingDictionary(locale);
-  const company = localizeCompany(locale, await getPublishedCompanyProfile());
+  const company = localizeCompany(locale, await getPublishedCompanyProfile(locale));
   const homeHref = withLocalePath(locale, "/");
   const contactHref = withLocalePath(locale, "/contact");
   const homeLabel = getHomeLabel(locale);

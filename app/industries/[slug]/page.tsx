@@ -34,7 +34,7 @@ export async function generateMetadata({
   const locale = await getRequestLocale();
   const dictionary = getMarketingDictionary(locale);
   const { slug } = await params;
-  const industry = await getPublishedIndustryBySlug(slug);
+  const industry = await getPublishedIndustryBySlug(slug, locale);
   const localizedIndustry = industry ? localizeIndustry(locale, industry) : null;
 
   if (!localizedIndustry) {
@@ -64,7 +64,7 @@ export default async function IndustryDetailPage({ params }: IndustryPageProps) 
   const industriesHref = withLocalePath(locale, "/industries");
   const homeLabel = getHomeLabel(locale);
   const { slug } = await params;
-  const industry = await getPublishedIndustryBySlug(slug);
+  const industry = await getPublishedIndustryBySlug(slug, locale);
 
   if (!industry) {
     const redirectEntry = await getRedirectForPath(`/industries/${slug}`);

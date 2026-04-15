@@ -34,7 +34,7 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata() {
   const locale = await getRequestLocale();
-  const company = localizeCompany(locale, await getPublishedCompanyProfile());
+  const company = localizeCompany(locale, await getPublishedCompanyProfile(locale));
 
   return buildPageMetadata({
     title:
@@ -60,11 +60,11 @@ export default async function Home() {
   const locale = await getRequestLocale();
   const dictionary = getMarketingDictionary(locale);
   const [company, products, industries, blogPosts, homeFaq] = await Promise.all([
-    getPublishedCompanyProfile(),
-    getPublishedProducts(),
-    getPublishedIndustries(),
-    getPublishedBlogPosts(),
-    getPublishedHomeFaq(),
+    getPublishedCompanyProfile(locale),
+    getPublishedProducts(locale),
+    getPublishedIndustries(locale),
+    getPublishedBlogPosts(locale),
+    getPublishedHomeFaq(locale),
   ]);
   const localizedCompany = localizeCompany(locale, company);
   const localizedProducts = products.map((product) => localizeProduct(locale, product));

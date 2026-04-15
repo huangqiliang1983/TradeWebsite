@@ -17,7 +17,7 @@ export async function Footer({
   locale: Locale;
 }) {
   const dictionary = getMarketingDictionary(locale);
-  const products = (await getPublishedProducts())
+  const products = (await getPublishedProducts(locale))
     .slice(0, 3)
     .map((product) => localizeProduct(locale, product));
   const footerNavigation = {

@@ -42,7 +42,7 @@ export default async function IndustriesPage() {
   const homeHref = withLocalePath(locale, "/");
   const industriesHref = withLocalePath(locale, "/industries");
   const homeLabel = getHomeLabel(locale);
-  const industries = (await getPublishedIndustries()).map((industry) =>
+  const industries = (await getPublishedIndustries(locale)).map((industry) =>
     localizeIndustry(locale, industry),
   );
 

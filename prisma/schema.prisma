@@ -25,6 +25,13 @@ enum InquiryStatus {
   SPAM
 }
 
+enum TranslationStatus {
+  DRAFT
+  MACHINE_TRANSLATED
+  REVIEWED
+  PUBLISHED
+}
+
 model CompanyProfile {
   id             String        @id @default(cuid())
   companyName    String
@@ -49,6 +56,29 @@ model CompanyProfile {
   publishStatus  PublishStatus @default(DRAFT)
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
+
+  translations CompanyProfileTranslation[]
+}
+
+model CompanyProfileTranslation {
+  id                String            @id @default(cuid())
+  companyProfileId  String
+  locale            String
+  companyName       String?
+  tagline           String?
+  summary           String?
+  description       String?
+  logoImageAlt      String?
+  seoTitle          String?
+  seoDescription    String?
+  translationStatus TranslationStatus @default(MACHINE_TRANSLATED)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  companyProfile CompanyProfile @relation(fields: [companyProfileId], references: [id], onDelete: Cascade)
+
+  @@unique([companyProfileId, locale])
+  @@index([locale, translationStatus])
 }
 
 model ProductCategory {
@@ -66,8 +96,28 @@ model ProductCategory {
   updatedAt      DateTime      @updatedAt
 
   products Product[]
+  translations ProductCategoryTranslation[]
 
   @@index([publishStatus, sortOrder])
+}
+
+model ProductCategoryTranslation {
+  id                String            @id @default(cuid())
+  productCategoryId String
+  locale            String
+  name              String?
+  summary           String?
+  description       String?
+  seoTitle          String?
+  seoDescription    String?
+  translationStatus TranslationStatus @default(MACHINE_TRANSLATED)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  productCategory ProductCategory @relation(fields: [productCategoryId], references: [id], onDelete: Cascade)
+
+  @@unique([productCategoryId, locale])
+  @@index([locale, translationStatus])
 }
 
 model Product {
@@ -95,9 +145,33 @@ model Product {
   category         ProductCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   faqs             FAQ[]
   inquiries        Inquiry[]
+  translations     ProductTranslation[]
 
   @@index([publishStatus])
   @@index([categoryId, publishStatus])
+}
+
+model ProductTranslation {
+  id                String            @id @default(cuid())
+  productId         String
+  locale            String
+  name              String?
+  summary           String?
+  description       String?
+  heroTitle         String?
+  heroImageAlt      String?
+  sellingPoints     Json?
+  specifications    Json?
+  seoTitle          String?
+  seoDescription    String?
+  translationStatus TranslationStatus @default(MACHINE_TRANSLATED)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, locale])
+  @@index([locale, translationStatus])
 }
 
 model IndustryPage {
@@ -118,8 +192,31 @@ model IndustryPage {
   updatedAt      DateTime      @updatedAt
 
   faqs FAQ[]
+  translations IndustryPageTranslation[]
 
   @@index([publishStatus])
+}
+
+model IndustryPageTranslation {
+  id                String            @id @default(cuid())
+  industryPageId    String
+  locale            String
+  title             String?
+  summary           String?
+  description       String?
+  heroTitle         String?
+  heroImageAlt      String?
+  content           Json?
+  seoTitle          String?
+  seoDescription    String?
+  translationStatus TranslationStatus @default(MACHINE_TRANSLATED)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  industryPage IndustryPage @relation(fields: [industryPageId], references: [id], onDelete: Cascade)
+
+  @@unique([industryPageId, locale])
+  @@index([locale, translationStatus])
 }
 
 model BlogPost {
@@ -139,8 +236,29 @@ model BlogPost {
   updatedAt      DateTime      @updatedAt
 
   faqs FAQ[]
+  translations BlogPostTranslation[]
 
   @@index([publishStatus, publishedAt])
+}
+
+model BlogPostTranslation {
+  id                String            @id @default(cuid())
+  blogPostId        String
+  locale            String
+  title             String?
+  excerpt           String?
+  content           Json?
+  coverImageAlt     String?
+  seoTitle          String?
+  seoDescription    String?
+  translationStatus TranslationStatus @default(MACHINE_TRANSLATED)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  blogPost BlogPost @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
+
+  @@unique([blogPostId, locale])
+  @@index([locale, translationStatus])
 }
 
 model FAQ {
@@ -161,11 +279,30 @@ model FAQ {
   product      Product?      @relation(fields: [productId], references: [id], onDelete: Cascade)
   industryPage IndustryPage? @relation(fields: [industryPageId], references: [id], onDelete: Cascade)
   blogPost     BlogPost?     @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
+  translations FAQTranslation[]
 
   @@index([publishStatus, sortOrder])
   @@index([productId])
   @@index([industryPageId])
   @@index([blogPostId])
+}
+
+model FAQTranslation {
+  id                String            @id @default(cuid())
+  faqId             String
+  locale            String
+  question          String?
+  answer            String?
+  seoTitle          String?
+  seoDescription    String?
+  translationStatus TranslationStatus @default(MACHINE_TRANSLATED)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  faq FAQ @relation(fields: [faqId], references: [id], onDelete: Cascade)
+
+  @@unique([faqId, locale])
+  @@index([locale, translationStatus])
 }
 
 model Inquiry {

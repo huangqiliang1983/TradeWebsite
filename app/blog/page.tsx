@@ -42,7 +42,7 @@ export default async function BlogPage() {
   const homeHref = withLocalePath(locale, "/");
   const blogHref = withLocalePath(locale, "/blog");
   const homeLabel = getHomeLabel(locale);
-  const blogPosts = (await getPublishedBlogPosts()).map((post) =>
+  const blogPosts = (await getPublishedBlogPosts(locale)).map((post) =>
     localizeBlogPost(locale, post),
   );
 

@@ -20,6 +20,10 @@ export const serverEnv = {
   ADMIN_PASSWORD: process.env.ADMIN_PASSWORD ?? "",
   ADMIN_SESSION_SECRET: process.env.ADMIN_SESSION_SECRET ?? "",
   ADMIN_UPLOAD_MAX_IMAGE_BYTES: process.env.ADMIN_UPLOAD_MAX_IMAGE_BYTES ?? "3145728",
+  OPENAI_API_KEY: process.env.OPENAI_API_KEY ?? "",
+  OPENAI_TRANSLATION_MODEL: process.env.OPENAI_TRANSLATION_MODEL ?? "gpt-5-mini",
+  AUTO_TRANSLATE_ON_SAVE: process.env.AUTO_TRANSLATE_ON_SAVE ?? "true",
+  TRANSLATION_SOURCE_LOCALE: process.env.TRANSLATION_SOURCE_LOCALE ?? "zh-CN",
   REDIS_URL: process.env.REDIS_URL ?? "",
   REDIS_PREFIX: process.env.REDIS_PREFIX ?? "remember-everything:",
 } as const;

@@ -17,7 +17,7 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getRequestLocale();
-  const company = localizeCompany(locale, await getPublishedCompanyProfile());
+  const company = localizeCompany(locale, await getPublishedCompanyProfile(locale));
 
   return {
     metadataBase: new URL(siteConfig.url),
@@ -39,7 +39,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const locale = await getRequestLocale();
-  const company = localizeCompany(locale, await getPublishedCompanyProfile());
+  const company = localizeCompany(locale, await getPublishedCompanyProfile(locale));
 
   return (
     <html lang={getHtmlLang(locale)} dir={getTextDirection(locale)} data-scroll-behavior="smooth">

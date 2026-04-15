@@ -22,6 +22,7 @@ import {
   parseLineList,
   parseSpecificationLines,
 } from "@/features/admin/utils";
+import { generateEntityTranslations } from "@/features/admin/translations";
 
 function buildRedirect(path: string, params: Record<string, string | undefined>) {
   const searchParams = new URLSearchParams();
@@ -117,6 +118,46 @@ async function revalidateFaqTargets({
   }
 }
 
+async function generateTranslationDrafts({
+  entityType,
+  entityId,
+  actorEmail,
+}: {
+  entityType:
+    | "CompanyProfile"
+    | "ProductCategory"
+    | "Product"
+    | "IndustryPage"
+    | "BlogPost"
+    | "FAQ";
+  entityId: string;
+  actorEmail: string;
+}) {
+  try {
+    const result = await generateEntityTranslations({ entityType, entityId });
+
+    if (result.generated > 0) {
+      await createAuditLog({
+        action: "generate_translations",
+        entityType,
+        entityId,
+        actorEmail,
+        details: {
+          generatedLocales: result.generated,
+          skipped: result.skipped,
+        },
+      });
+    }
+  } catch {
+    await createAuditLog({
+      action: "generate_translations_failed",
+      entityType,
+      entityId,
+      actorEmail,
+    });
+  }
+}
+
 export async function saveCompanyProfileAction(formData: FormData) {
   const session = await requireAdminWriter();
   const id = getFormString(formData, "id");
@@ -205,6 +246,12 @@ export async function saveCompanyProfileAction(formData: FormData) {
       },
     });
 
+    await generateTranslationDrafts({
+      entityType: "CompanyProfile",
+      entityId: record.id,
+      actorEmail: session.email,
+    });
+
     revalidatePublishedSiteShell();
     savedRecordId = record.id;
   } catch (error) {
@@ -281,6 +328,12 @@ export async function saveProductCategoryAction(formData: FormData) {
       publishStatus: record.publishStatus,
       previousPublishStatus: previous?.publishStatus ?? null,
     },
+  });
+
+  await generateTranslationDrafts({
+    entityType: "ProductCategory",
+    entityId: record.id,
+    actorEmail: session.email,
   });
 
   revalidatePublishedEntity({
@@ -413,6 +466,12 @@ export async function saveProductAction(formData: FormData) {
       },
     });
 
+    await generateTranslationDrafts({
+      entityType: "Product",
+      entityId: record.id,
+      actorEmail: session.email,
+    });
+
     revalidatePublishedEntity({
       entityType: "Product",
       slug: record.slug,
@@ -541,6 +600,12 @@ export async function saveIndustryPageAction(formData: FormData) {
         previousPublishStatus: previous?.publishStatus ?? null,
         uploadChanged: Boolean(heroImage),
       },
+    });
+
+    await generateTranslationDrafts({
+      entityType: "IndustryPage",
+      entityId: record.id,
+      actorEmail: session.email,
     });
 
     revalidatePublishedEntity({
@@ -672,6 +737,12 @@ export async function saveBlogPostAction(formData: FormData) {
       },
     });
 
+    await generateTranslationDrafts({
+      entityType: "BlogPost",
+      entityId: record.id,
+      actorEmail: session.email,
+    });
+
     revalidatePublishedEntity({
       entityType: "BlogPost",
       slug: record.slug,
@@ -784,6 +855,12 @@ export async function saveFaqAction(formData: FormData) {
       industryPageId: record.industryPageId,
       blogPostId: record.blogPostId,
     },
+  });
+
+  await generateTranslationDrafts({
+    entityType: "FAQ",
+    entityId: record.id,
+    actorEmail: session.email,
   });
 
   await revalidateFaqTargets({

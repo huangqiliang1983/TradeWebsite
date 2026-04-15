@@ -37,7 +37,7 @@ export async function generateMetadata({
   const locale = await getRequestLocale();
   const dictionary = getMarketingDictionary(locale);
   const { slug } = await params;
-  const post = await getPublishedBlogPostBySlug(slug);
+  const post = await getPublishedBlogPostBySlug(slug, locale);
   const localizedPost = post ? localizeBlogPost(locale, post) : null;
 
   if (!localizedPost) {
@@ -69,8 +69,8 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
   const homeLabel = getHomeLabel(locale);
   const { slug } = await params;
   const [post, allPosts] = await Promise.all([
-    getPublishedBlogPostBySlug(slug),
-    getPublishedBlogPosts(),
+    getPublishedBlogPostBySlug(slug, locale),
+    getPublishedBlogPosts(locale),
   ]);
 
   if (!post) {
