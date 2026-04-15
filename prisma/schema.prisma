@@ -1,0 +1,229 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum PublishStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum InquiryType {
+  CONTACT
+  QUOTE
+}
+
+enum InquiryStatus {
+  NEW
+  REVIEWED
+  REPLIED
+  SPAM
+}
+
+model CompanyProfile {
+  id             String        @id @default(cuid())
+  companyName    String
+  slug           String        @unique
+  tagline        String?
+  summary        String?
+  description    String?
+  logoImage      String?
+  logoImageAlt   String?
+  email          String?
+  phone          String?
+  whatsapp       String?
+  addressLine1   String?
+  addressLine2   String?
+  city           String?
+  state          String?
+  country        String?
+  postalCode     String?
+  seoTitle       String?
+  seoDescription String?
+  seoCanonical   String?
+  publishStatus  PublishStatus @default(DRAFT)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model ProductCategory {
+  id             String        @id @default(cuid())
+  name           String
+  slug           String        @unique
+  summary        String?
+  description    String?
+  sortOrder      Int           @default(0)
+  seoTitle       String?
+  seoDescription String?
+  seoCanonical   String?
+  publishStatus  PublishStatus @default(DRAFT)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  products Product[]
+
+  @@index([publishStatus, sortOrder])
+}
+
+model Product {
+  id               String          @id @default(cuid())
+  categoryId       String?
+  name             String
+  slug             String          @unique
+  sku              String?
+  summary          String?
+  description      String?
+  heroTitle        String?
+  heroImage        String?
+  heroImageAlt     String?
+  leadTime         String?
+  moq              String?
+  sellingPoints    Json?
+  specifications   Json?
+  seoTitle         String?
+  seoDescription   String?
+  seoCanonical     String?
+  publishStatus    PublishStatus   @default(DRAFT)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  category         ProductCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  faqs             FAQ[]
+  inquiries        Inquiry[]
+
+  @@index([publishStatus])
+  @@index([categoryId, publishStatus])
+}
+
+model IndustryPage {
+  id             String        @id @default(cuid())
+  title          String
+  slug           String        @unique
+  summary        String?
+  description    String?
+  heroTitle      String?
+  heroImage      String?
+  heroImageAlt   String?
+  content        Json?
+  seoTitle       String?
+  seoDescription String?
+  seoCanonical   String?
+  publishStatus  PublishStatus @default(DRAFT)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  faqs FAQ[]
+
+  @@index([publishStatus])
+}
+
+model BlogPost {
+  id             String        @id @default(cuid())
+  title          String
+  slug           String        @unique
+  excerpt        String?
+  content        Json?
+  coverImage     String?
+  coverImageAlt  String?
+  publishedAt    DateTime?
+  seoTitle       String?
+  seoDescription String?
+  seoCanonical   String?
+  publishStatus  PublishStatus @default(DRAFT)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  faqs FAQ[]
+
+  @@index([publishStatus, publishedAt])
+}
+
+model FAQ {
+  id             String        @id @default(cuid())
+  question       String
+  answer         String
+  slug           String?
+  sortOrder      Int           @default(0)
+  seoTitle       String?
+  seoDescription String?
+  publishStatus  PublishStatus @default(DRAFT)
+  productId      String?
+  industryPageId String?
+  blogPostId     String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  product      Product?      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  industryPage IndustryPage? @relation(fields: [industryPageId], references: [id], onDelete: Cascade)
+  blogPost     BlogPost?     @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
+
+  @@index([publishStatus, sortOrder])
+  @@index([productId])
+  @@index([industryPageId])
+  @@index([blogPostId])
+}
+
+model Inquiry {
+  id              String        @id @default(cuid())
+  inquiryType     InquiryType
+  status          InquiryStatus @default(NEW)
+  productId       String?
+  sourcePage      String
+  sourceProduct   String?
+  name            String
+  email           String
+  company         String?
+  country         String?
+  phone           String?
+  message         String
+  utmSource       String?
+  utmMedium       String?
+  utmCampaign     String?
+  utmTerm         String?
+  utmContent      String?
+  referrer        String?
+  userAgent       String?
+  ipHash          String?
+  honeypotFilled  Boolean       @default(false)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  product Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([status, createdAt])
+  @@index([email, createdAt])
+  @@index([productId, createdAt])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  action     String
+  entityType String
+  entityId   String?
+  actorEmail String
+  ipHash     String?
+  details    Json?
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId, createdAt])
+  @@index([actorEmail, createdAt])
+}
+
+model UrlRedirect {
+  id              String   @id @default(cuid())
+  sourcePath      String   @unique
+  destinationPath String
+  statusCode      Int      @default(301)
+  entityType      String?
+  entityId        String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([entityType, entityId, updatedAt])
+}
