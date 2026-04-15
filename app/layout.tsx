@@ -5,6 +5,7 @@ import { Analytics } from "@/components/Analytics";
 import { StructuredData } from "@/components/StructuredData";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { SiteChrome } from "@/components/SiteChrome";
 import { getPublishedCompanyProfile } from "@/features/marketing/public-content";
 import { localizeCompany } from "@/features/marketing/translations";
 import { serverEnv } from "@/lib/env";
@@ -66,17 +67,20 @@ export default async function RootLayout({
         />
         <StructuredData data={websiteSchema()} />
         <Analytics />
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-[var(--foreground)] focus:px-4 focus:py-2 focus:text-white"
+        <SiteChrome
+          header={<Header company={company} />}
+          footer={<Footer company={company} locale={locale} />}
+          skipLink={
+            <a
+              href="#main-content"
+              className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-[var(--foreground)] focus:px-4 focus:py-2 focus:text-white"
+            >
+              Skip to content
+            </a>
+          }
         >
-          Skip to content
-        </a>
-        <Header company={company} />
-        <main id="main-content" className="flex min-h-[60vh] flex-1 flex-col">
           {children}
-        </main>
-        <Footer company={company} locale={locale} />
+        </SiteChrome>
       </body>
     </html>
   );
