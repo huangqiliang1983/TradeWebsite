@@ -32,7 +32,7 @@ export function Header({ company }: { company: PublishedCompanyProfile }) {
   const hasUploadedLogo = company.logoImage && !company.logoImage.startsWith("/brand/");
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[rgba(23,32,26,0.1)] bg-[rgba(255,249,239,0.86)] shadow-[0_10px_40px_rgba(23,32,26,0.04)] backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-[var(--line)] bg-[var(--surface)]/90 shadow-sm backdrop-blur-xl">
       <Container>
         <div className="flex min-h-18 items-center justify-between gap-3 py-3.5">
           <Link
@@ -40,7 +40,7 @@ export function Header({ company }: { company: PublishedCompanyProfile }) {
             className="group flex min-w-0 items-center gap-3 text-[var(--foreground)]"
             onClick={() => setIsOpen(false)}
           >
-            <span className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[rgba(168,83,43,0.24)] bg-[var(--charcoal)] text-sm font-semibold uppercase tracking-[0.18em] text-[var(--surface)] transition group-hover:-translate-y-0.5">
+            <span className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[var(--line)] bg-[var(--charcoal)] text-sm font-semibold uppercase tracking-[0.18em] text-[var(--surface)] transition group-hover:-translate-y-0.5">
               {hasUploadedLogo ? (
                 <Image
                   src={company.logoImage}
@@ -58,7 +58,7 @@ export function Header({ company }: { company: PublishedCompanyProfile }) {
             </span>
           </Link>
 
-          <nav className="hidden items-center gap-1 rounded-full border border-[rgba(23,32,26,0.08)] bg-white/55 p-1 lg:flex" aria-label="Primary">
+          <nav className="hidden items-center gap-1 rounded-full border border-[var(--line)] bg-[var(--background)] p-1 lg:flex" aria-label="Primary">
             {dictionary.navigation.map((item) => {
               const href = withLocalePath(locale, item.href);
 
@@ -94,7 +94,7 @@ export function Header({ company }: { company: PublishedCompanyProfile }) {
 
           <button
             type="button"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[rgba(23,32,26,0.12)] bg-white/70 text-[var(--foreground)] lg:hidden"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--line)] bg-[var(--surface)]/70 text-[var(--foreground)] lg:hidden"
             aria-expanded={isOpen}
             aria-controls="mobile-navigation"
             aria-label="Toggle navigation menu"
@@ -112,7 +112,7 @@ export function Header({ company }: { company: PublishedCompanyProfile }) {
       <div
         id="mobile-navigation"
         className={cx(
-          "overflow-hidden border-t border-[rgba(23,32,26,0.1)] bg-[var(--surface)] transition-[max-height] duration-300 lg:hidden",
+          "overflow-hidden border-t border-[var(--line)] bg-[var(--surface)] transition-[max-height] duration-300 lg:hidden",
           isOpen ? "max-h-96" : "max-h-0",
         )}
       >

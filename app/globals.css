@@ -1,16 +1,16 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f3eadc;
-  --surface: #fff9ef;
-  --surface-strong: #efe0ca;
-  --foreground: #17201a;
-  --muted: #687067;
-  --line: #d9c9b2;
-  --accent: #a8532b;
-  --accent-dark: #713519;
-  --accent-soft: #ead1b8;
-  --charcoal: #101711;
+  --background: #fafaf9; /* stone-50 */
+  --surface: #ffffff;
+  --surface-strong: #f5f5f4; /* stone-100 */
+  --foreground: #18181b; /* zinc-900 */
+  --muted: #52525b; /* zinc-600 */
+  --line: #e7e5e4; /* stone-200 */
+  --accent: #ea580c; /* orange-600 */
+  --accent-dark: #c2410c; /* orange-700 */
+  --accent-soft: #ffedd5; /* orange-50 */
+  --charcoal: #09090b; /* zinc-950 */
   --font-body: "Aptos", "Source Sans 3", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
   --font-heading: "Iowan Old Style", "Newsreader", Georgia, "Times New Roman", serif;
 }
@@ -40,10 +40,7 @@
 
   body {
     font-family: var(--font-body);
-    background:
-      radial-gradient(circle at 18% 8%, rgba(168, 83, 43, 0.16), transparent 28rem),
-      radial-gradient(circle at 92% 12%, rgba(16, 23, 17, 0.08), transparent 22rem),
-      linear-gradient(180deg, #fff8ed 0%, var(--background) 44%, #f8efe2 100%);
+    background-color: var(--background);
     color: var(--foreground);
     text-rendering: optimizeLegibility;
   }
@@ -69,7 +66,7 @@
   }
 
   ::selection {
-    background: rgba(168, 83, 43, 0.2);
+    background: rgba(234, 88, 12, 0.2);
     color: var(--foreground);
   }
 
@@ -83,12 +80,19 @@
 @layer utilities {
   .texture-grid {
     background-image:
-      linear-gradient(rgba(23, 32, 26, 0.06) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(23, 32, 26, 0.06) 1px, transparent 1px);
-    background-size: 34px 34px;
+      linear-gradient(rgba(24, 24, 27, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(24, 24, 27, 0.04) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  .texture-grid-dark {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 32px 32px;
   }
 
   .soft-panel {
-    box-shadow: 0 28px 90px rgba(23, 32, 26, 0.1);
+    box-shadow: 0 12px 48px -12px rgba(24, 24, 27, 0.1);
   }
 }

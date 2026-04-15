@@ -84,12 +84,10 @@ export default async function Home() {
       {localizedFaq.length > 0 ? <StructuredData data={faqSchema(localizedFaq)} /> : null}
 
       <Section className="relative overflow-hidden border-b border-[rgba(255,255,255,0.08)] bg-[var(--charcoal)] py-0 text-white">
-        <div className="texture-grid pointer-events-none absolute inset-0 opacity-[0.13]" />
-        <div className="pointer-events-none absolute left-[-10rem] top-[-12rem] h-96 w-96 rounded-full bg-[var(--accent)]/30 blur-3xl" />
-        <div className="pointer-events-none absolute bottom-[-12rem] right-[-10rem] h-[28rem] w-[28rem] rounded-full bg-white/10 blur-3xl" />
-        <Container className="relative grid min-h-[calc(100svh-76px)] gap-10 py-12 sm:py-16 lg:grid-cols-[minmax(0,0.98fr)_minmax(360px,0.82fr)] lg:items-center lg:py-20">
+        <div className="texture-grid-dark pointer-events-none absolute inset-0 opacity-20" />
+        <Container className="relative grid min-h-[calc(100svh-76px)] gap-10 py-12 sm:py-16 lg:grid-cols-2 lg:items-center lg:gap-16 lg:py-20">
           <div className="max-w-4xl space-y-7">
-            <p className="text-sm font-semibold uppercase tracking-[0.28em] text-[var(--accent-soft)]">
+            <p className="text-sm font-semibold uppercase tracking-[0.28em] text-[var(--accent)]">
                 {localizedCompany.tagline}
             </p>
             <h1 className="text-5xl leading-[0.96] text-white sm:text-6xl lg:text-7xl xl:text-8xl">
@@ -133,13 +131,12 @@ export default async function Home() {
           </div>
 
           <div className="relative mx-auto w-full max-w-xl lg:mx-0">
-            <div className="absolute -inset-4 rounded-[3rem] bg-[var(--accent)]/24 blur-2xl" />
-            <div className="soft-panel relative overflow-hidden rounded-[2.5rem] border border-white/12 bg-white/[0.07] backdrop-blur">
-              <div className="border-b border-white/10 px-5 py-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[var(--accent-soft)]">
+            <div className="soft-panel relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md">
+              <div className="border-b border-white/10 px-6 py-5">
+                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[var(--accent)]">
                   Export Floor
                 </p>
-                <h2 className="mt-2 text-2xl text-white">{heroVisualTitle}</h2>
+                <h2 className="mt-2 font-heading text-2xl text-white">{heroVisualTitle}</h2>
               </div>
               <Image
                 src="/brand/operations.svg"
@@ -152,8 +149,8 @@ export default async function Home() {
               />
               <div className="grid grid-cols-3 divide-x divide-white/10 border-t border-white/10 text-center">
                 {companyStats.slice(0, 3).map((stat) => (
-                  <div key={stat.label} className="px-3 py-4">
-                    <p className="font-heading text-2xl text-white">{stat.value}</p>
+                  <div key={stat.label} className="bg-white/5 px-3 py-5 transition hover:bg-white/10">
+                    <p className="font-heading text-2xl text-white sm:text-3xl">{stat.value}</p>
                     <p className="mt-1 text-[0.68rem] uppercase tracking-[0.16em] text-white/50">
                       {stat.label}
                     </p>
@@ -165,23 +162,23 @@ export default async function Home() {
         </Container>
       </Section>
 
-      <Section>
+      <Section className="bg-[var(--surface-strong)]">
         <Container>
           <SectionHeading
             eyebrow={dictionary.home.whyEyebrow}
             title={dictionary.home.whyTitle}
             description={dictionary.home.whyDescription}
           />
-          <div className="mt-12 grid gap-0 overflow-hidden rounded-[2.5rem] border border-[var(--line)] bg-[rgba(255,249,239,0.72)] md:grid-cols-3">
+          <div className="mt-12 grid gap-0 overflow-hidden rounded-2xl border border-[var(--line)] bg-[var(--surface)] md:grid-cols-3">
             {homeHighlights.map((highlight, index) => (
               <article
                 key={highlight.title}
-                className="border-b border-[var(--line)] p-6 last:border-b-0 md:border-b-0 md:border-r md:last:border-r-0 lg:p-8"
+                className="border-b border-[var(--line)] p-8 last:border-b-0 md:border-b-0 md:border-r md:last:border-r-0 lg:p-10"
               >
-                <p className="font-heading text-5xl text-[var(--accent)]/28">
+                <p className="font-heading text-4xl text-[var(--accent)]">
                   0{index + 1}
                 </p>
-                <h2 className="mt-5 text-2xl">{highlight.title}</h2>
+                <h2 className="mt-5 text-xl font-semibold text-[var(--foreground)] sm:text-2xl">{highlight.title}</h2>
                 <p className="mt-4 text-base leading-8 text-[var(--muted)]">
                   {highlight.description}
                 </p>
@@ -191,13 +188,14 @@ export default async function Home() {
         </Container>
       </Section>
 
-      <Section className="bg-[var(--charcoal)] text-white">
-        <Container>
+      <Section className="relative border-y border-[var(--line)] bg-[var(--charcoal)] text-white">
+        <div className="texture-grid-dark pointer-events-none absolute inset-0 opacity-20" />
+        <Container className="relative">
           <div className="grid gap-8 sm:grid-cols-2 xl:grid-cols-4">
             {companyStats.map((stat) => (
-              <div key={stat.label} className="border-t border-white/12 pt-6">
+              <div key={stat.label} className="border-l-2 border-[var(--accent)] pl-6">
                 <p className="font-heading text-5xl text-white sm:text-6xl">{stat.value}</p>
-                <p className="mt-4 text-sm font-semibold uppercase tracking-[0.18em] text-white/58">
+                <p className="mt-4 text-sm font-semibold uppercase tracking-[0.18em] text-white/60">
                   {stat.label}
                 </p>
               </div>
@@ -213,17 +211,17 @@ export default async function Home() {
             title={dictionary.home.productsTitle}
             description={dictionary.home.productsDescription}
           />
-          <div className="mt-12 space-y-4">
+          <div className="mt-12 space-y-6">
             {featuredProducts.map((product) => (
               <article
                 key={product.slug}
-                className="group grid gap-5 rounded-[2rem] border border-[rgba(23,32,26,0.1)] bg-[var(--surface)] p-6 transition hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(23,32,26,0.08)] md:grid-cols-[1.2fr_0.8fr] md:items-start md:p-8"
+                className="group grid gap-6 rounded-2xl border border-[var(--line)] bg-[var(--surface)] p-6 transition-all hover:-translate-y-1 hover:shadow-lg md:grid-cols-[1fr_240px] md:items-start md:p-8"
               >
                 <div>
                   <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--accent)]">
                     {product.category}
                   </p>
-                  <h2 className="mt-2 text-3xl">
+                  <h2 className="mt-3 text-2xl font-bold text-[var(--foreground)] sm:text-3xl">
                     <Link
                       href={withLocalePath(locale, `/products/${product.slug}`)}
                       className="transition hover:text-[var(--accent)]"
@@ -235,13 +233,13 @@ export default async function Home() {
                     {product.description}
                   </p>
                 </div>
-                <div className="grid gap-3 text-sm text-[var(--muted)] sm:grid-cols-2 md:grid-cols-1">
-                  <p>{dictionary.home.moq}: {product.moq}</p>
-                  <p>{dictionary.home.leadTime}: {product.leadTime}</p>
-                  <p>{dictionary.home.sku}: {product.sku}</p>
+                <div className="grid gap-3 rounded-xl bg-[var(--background)] p-5 text-sm text-[var(--muted)] border border-[var(--line)] sm:grid-cols-2 md:grid-cols-1">
+                  <p><strong className="text-[var(--foreground)]">{dictionary.home.moq}:</strong> {product.moq}</p>
+                  <p><strong className="text-[var(--foreground)]">{dictionary.home.leadTime}:</strong> {product.leadTime}</p>
+                  <p><strong className="text-[var(--foreground)]">{dictionary.home.sku}:</strong> {product.sku}</p>
                   <Link
                     href={withLocalePath(locale, `/products/${product.slug}`)}
-                    className="font-semibold text-[var(--foreground)] underline decoration-[var(--accent)] underline-offset-4 transition group-hover:text-[var(--accent)]"
+                    className="mt-2 inline-block font-semibold text-[var(--foreground)] underline decoration-[var(--accent)] underline-offset-4 transition group-hover:text-[var(--accent)]"
                   >
                     {dictionary.home.viewProductTemplate}
                   </Link>
@@ -249,7 +247,7 @@ export default async function Home() {
               </article>
             ))}
             {featuredProducts.length === 0 ? (
-              <article className="rounded-[2rem] border border-dashed border-[var(--line)] bg-[var(--surface)] p-6 text-base leading-8 text-[var(--muted)]">
+              <article className="rounded-2xl border border-dashed border-[var(--line)] bg-[var(--surface)] p-6 text-base leading-8 text-[var(--muted)]">
                 {dictionary.home.emptyProducts}
               </article>
             ) : null}
@@ -257,7 +255,7 @@ export default async function Home() {
         </Container>
       </Section>
 
-      <Section className="texture-grid bg-[var(--surface)]">
+      <Section className="texture-grid border-t border-[var(--line)] bg-[var(--background)]">
         <Container>
           <SectionHeading
             eyebrow={dictionary.home.industryEyebrow}
@@ -266,14 +264,14 @@ export default async function Home() {
           />
           <div className="mt-12 grid gap-8 lg:grid-cols-3">
             {featuredIndustries.map((industry) => (
-              <article key={industry.slug} className="border-t border-[var(--line)] pt-6">
+              <article key={industry.slug} className="group rounded-2xl border border-[var(--line)] bg-[var(--surface)] p-8 transition-shadow hover:shadow-md">
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--accent)]">
                   {dictionary.home.industryLabel}
                 </p>
-                <h2 className="mt-3 text-2xl">
+                <h2 className="mt-4 text-2xl font-bold text-[var(--foreground)]">
                   <Link
                     href={withLocalePath(locale, `/industries/${industry.slug}`)}
-                    className="transition hover:text-[var(--accent)]"
+                    className="transition group-hover:text-[var(--accent)]"
                   >
                     {industry.name}
                   </Link>
@@ -284,42 +282,8 @@ export default async function Home() {
               </article>
             ))}
             {featuredIndustries.length === 0 ? (
-              <article className="border-t border-[var(--line)] pt-5 text-base leading-8 text-[var(--muted)]">
+              <article className="rounded-2xl border border-[var(--line)] bg-[var(--surface)] p-8 text-base leading-8 text-[var(--muted)]">
                 {dictionary.home.emptyIndustries}
-              </article>
-            ) : null}
-          </div>
-        </Container>
-      </Section>
-
-      <Section>
-        <Container>
-          <SectionHeading
-            eyebrow={dictionary.home.insightsEyebrow}
-            title={dictionary.home.insightsTitle}
-            description={dictionary.home.insightsDescription}
-          />
-          <div className="mt-12 grid gap-8 lg:grid-cols-3">
-            {featuredPosts.map((post) => (
-              <article key={post.slug} className="space-y-4 border-t border-[var(--line)] pt-5">
-                <div className="flex flex-wrap gap-3 text-sm text-[var(--muted)]">
-                  <span>{post.category}</span>
-                  <span>{post.readingTime}</span>
-                </div>
-                <h2 className="text-2xl">
-                  <Link
-                    href={withLocalePath(locale, `/blog/${post.slug}`)}
-                    className="transition hover:text-[var(--accent)]"
-                  >
-                    {post.title}
-                  </Link>
-                </h2>
-                <p className="text-base leading-8 text-[var(--muted)]">{post.summary}</p>
-              </article>
-            ))}
-            {featuredPosts.length === 0 ? (
-              <article className="space-y-4 border-t border-[var(--line)] pt-5 text-base leading-8 text-[var(--muted)]">
-                {dictionary.home.emptyPosts}
               </article>
             ) : null}
           </div>
@@ -328,33 +292,71 @@ export default async function Home() {
 
       <Section className="bg-[var(--surface)]">
         <Container>
-          <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+          <SectionHeading
+            eyebrow={dictionary.home.insightsEyebrow}
+            title={dictionary.home.insightsTitle}
+            description={dictionary.home.insightsDescription}
+          />
+          <div className="mt-12 grid gap-8 lg:grid-cols-3">
+            {featuredPosts.map((post) => (
+              <article key={post.slug} className="group space-y-4">
+                <div className="flex flex-wrap gap-3 text-sm text-[var(--muted)]">
+                  <span className="font-semibold text-[var(--accent)]">{post.category}</span>
+                  <span>&bull;</span>
+                  <span>{post.readingTime}</span>
+                </div>
+                <h2 className="text-xl font-bold text-[var(--foreground)] sm:text-2xl">
+                  <Link
+                    href={withLocalePath(locale, `/blog/${post.slug}`)}
+                    className="transition group-hover:text-[var(--accent)]"
+                  >
+                    {post.title}
+                  </Link>
+                </h2>
+                <p className="text-base leading-8 text-[var(--muted)]">{post.summary}</p>
+              </article>
+            ))}
+            {featuredPosts.length === 0 ? (
+              <article className="space-y-4 text-base leading-8 text-[var(--muted)]">
+                {dictionary.home.emptyPosts}
+              </article>
+            ) : null}
+          </div>
+        </Container>
+      </Section>
+
+      <Section className="border-t border-[var(--line)] bg-[var(--surface-strong)]">
+        <Container>
+          <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
             <SectionHeading
               eyebrow={dictionary.home.faqEyebrow}
               title={dictionary.home.faqTitle}
               description={dictionary.home.faqDescription}
             />
-            <FAQList items={localizedFaq} />
+            <div className="rounded-2xl border border-[var(--line)] bg-[var(--surface)] p-6 sm:p-8">
+              <FAQList items={localizedFaq} />
+            </div>
           </div>
         </Container>
       </Section>
 
       <Section>
         <Container>
-          <div className="soft-panel rounded-[2.5rem] border border-[rgba(23,32,26,0.1)] bg-[var(--charcoal)] p-8 text-white md:p-12">
-            <div className="max-w-3xl space-y-4">
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--accent-soft)]">
+          <div className="soft-panel relative overflow-hidden rounded-2xl border border-[var(--charcoal)] bg-[var(--charcoal)] p-8 text-white md:p-14 lg:p-20">
+            <div className="texture-grid-dark pointer-events-none absolute inset-0 opacity-20" />
+            <div className="relative max-w-3xl space-y-6">
+              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--accent)]">
                 {dictionary.home.finalEyebrow}
               </p>
-              <h2 className="text-3xl leading-[1.05] text-white sm:text-4xl lg:text-5xl">
+              <h2 className="font-heading text-4xl leading-tight text-white sm:text-5xl lg:text-6xl">
                 {dictionary.home.finalTitle}
               </h2>
-              <p className="text-base leading-8 text-white/72 sm:text-lg">
+              <p className="text-base leading-8 text-white/70 sm:text-lg">
                 {dictionary.home.finalDescription}
               </p>
-            </div>
-            <div className="mt-6">
-              <CTAGroup locale={locale} tone="dark" />
+              <div className="pt-4">
+                <CTAGroup locale={locale} tone="dark" />
+              </div>
             </div>
           </div>
         </Container>
