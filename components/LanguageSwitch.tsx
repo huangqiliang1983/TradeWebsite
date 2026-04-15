@@ -36,7 +36,7 @@ export function LanguageSwitch({
   return (
     <div
       className={cx(
-        "inline-flex max-w-full flex-nowrap items-center overflow-x-auto rounded-full border border-[var(--line)] bg-white/90 p-1 text-sm",
+        "inline-flex max-w-full flex-nowrap items-center overflow-x-auto rounded-full border border-[rgba(23,32,26,0.1)] bg-white/72 p-1 text-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]",
         className,
       )}
       aria-label={dictionary.languageSwitch.label}
@@ -46,7 +46,7 @@ export function LanguageSwitch({
           key={targetLocale}
           href={buildHref(targetLocale)}
           className={cx(
-            "shrink-0 rounded-full px-2.5 py-2 text-xs transition sm:px-3 sm:text-sm",
+            "shrink-0 rounded-full px-2.5 py-2 text-xs font-semibold transition sm:px-3 sm:text-sm",
             locale === targetLocale
               ? "bg-[var(--foreground)] text-white"
               : "text-[var(--muted)] hover:text-[var(--foreground)]",

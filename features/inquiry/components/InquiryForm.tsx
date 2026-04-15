@@ -149,12 +149,12 @@ export function InquiryForm({
     <div
       id={inquiryType === "QUOTE" || sourcePage.endsWith("/contact") ? "quote" : "contact-form"}
       className={cx(
-        "rounded-[2rem] border border-[var(--line)] bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.08)] sm:p-8",
+        "soft-panel rounded-[2rem] border border-[rgba(23,32,26,0.1)] bg-[var(--surface)] p-6 sm:p-8",
         className,
       )}
     >
       <div className="space-y-3">
-        <p className="text-sm font-medium uppercase tracking-[0.24em] text-[var(--accent)]">
+        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--accent)]">
           {inquiryType === "QUOTE" ? dictionary.form.quoteEyebrow : dictionary.form.contactEyebrow}
         </p>
         <h2 className="text-2xl">{title}</h2>
@@ -306,7 +306,7 @@ function SubmitButton({
   return (
     <button
       type="submit"
-      className="inline-flex min-h-12 w-full items-center justify-center rounded-full border border-[var(--accent)] bg-[var(--accent)] px-6 text-sm font-medium text-white transition hover:border-[var(--accent-dark)] hover:bg-[var(--accent-dark)] disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
+          className="inline-flex min-h-12 w-full items-center justify-center rounded-full border border-[var(--accent)] bg-[var(--accent)] px-6 text-sm font-semibold text-white shadow-[0_14px_32px_rgba(168,83,43,0.22)] transition hover:-translate-y-0.5 hover:border-[var(--accent-dark)] hover:bg-[var(--accent-dark)] disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
       disabled={pending}
     >
       {pending ? pendingLabel : label}

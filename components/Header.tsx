@@ -32,15 +32,15 @@ export function Header({ company }: { company: PublishedCompanyProfile }) {
   const hasUploadedLogo = company.logoImage && !company.logoImage.startsWith("/brand/");
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[var(--line)] bg-[rgba(248,244,237,0.9)] backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-[rgba(23,32,26,0.1)] bg-[rgba(255,249,239,0.86)] shadow-[0_10px_40px_rgba(23,32,26,0.04)] backdrop-blur-xl">
       <Container>
-        <div className="flex min-h-18 items-center justify-between gap-4 py-4">
+        <div className="flex min-h-18 items-center justify-between gap-3 py-3.5">
           <Link
             href={homeHref}
-            className="flex items-center gap-3 text-[var(--foreground)]"
+            className="group flex min-w-0 items-center gap-3 text-[var(--foreground)]"
             onClick={() => setIsOpen(false)}
           >
-            <span className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--accent)] bg-[var(--accent)] text-sm font-semibold uppercase tracking-[0.18em] text-white">
+            <span className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[rgba(168,83,43,0.24)] bg-[var(--charcoal)] text-sm font-semibold uppercase tracking-[0.18em] text-[var(--surface)] transition group-hover:-translate-y-0.5">
               {hasUploadedLogo ? (
                 <Image
                   src={company.logoImage}
@@ -53,12 +53,12 @@ export function Header({ company }: { company: PublishedCompanyProfile }) {
                 initials
               )}
             </span>
-            <span className="block font-heading text-lg leading-none tracking-[0.12em]">
+            <span className="block truncate font-heading text-lg leading-none tracking-[-0.04em] sm:text-xl">
               {company.companyName}
             </span>
           </Link>
 
-          <nav className="hidden items-center gap-6 lg:flex" aria-label="Primary">
+          <nav className="hidden items-center gap-1 rounded-full border border-[rgba(23,32,26,0.08)] bg-white/55 p-1 lg:flex" aria-label="Primary">
             {dictionary.navigation.map((item) => {
               const href = withLocalePath(locale, item.href);
 
@@ -67,10 +67,10 @@ export function Header({ company }: { company: PublishedCompanyProfile }) {
                 key={href}
                 href={href}
                 className={cx(
-                  "text-sm font-medium transition",
+                  "rounded-full px-4 py-2 text-sm font-semibold transition",
                   pathname === href
-                    ? "text-[var(--foreground)]"
-                    : "text-[var(--muted)] hover:text-[var(--foreground)]",
+                    ? "bg-[var(--foreground)] text-white"
+                    : "text-[var(--muted)] hover:bg-white hover:text-[var(--foreground)]",
                 )}
                 aria-current={pathname === href ? "page" : undefined}
               >
@@ -81,7 +81,7 @@ export function Header({ company }: { company: PublishedCompanyProfile }) {
           </nav>
 
           <div className="flex items-center gap-3">
-            <LanguageSwitch className="shrink-0" onNavigate={() => setIsOpen(false)} />
+            <LanguageSwitch className="max-w-[44vw] sm:max-w-none" onNavigate={() => setIsOpen(false)} />
             <div className="hidden lg:block">
               <Link
                 className={buttonStyles({ variant: "primary", size: "md" })}
@@ -94,7 +94,7 @@ export function Header({ company }: { company: PublishedCompanyProfile }) {
 
           <button
             type="button"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--line)] text-[var(--foreground)] lg:hidden"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[rgba(23,32,26,0.12)] bg-white/70 text-[var(--foreground)] lg:hidden"
             aria-expanded={isOpen}
             aria-controls="mobile-navigation"
             aria-label="Toggle navigation menu"
@@ -112,7 +112,7 @@ export function Header({ company }: { company: PublishedCompanyProfile }) {
       <div
         id="mobile-navigation"
         className={cx(
-          "overflow-hidden border-t border-[var(--line)] bg-[var(--background)] transition-[max-height] duration-300 lg:hidden",
+          "overflow-hidden border-t border-[rgba(23,32,26,0.1)] bg-[var(--surface)] transition-[max-height] duration-300 lg:hidden",
           isOpen ? "max-h-96" : "max-h-0",
         )}
       >
@@ -126,7 +126,7 @@ export function Header({ company }: { company: PublishedCompanyProfile }) {
                 key={href}
                 href={href}
                 className={cx(
-                  "rounded-2xl px-4 py-3 text-sm font-medium transition",
+                  "rounded-2xl px-4 py-3 text-sm font-semibold transition",
                   pathname === href
                     ? "bg-[var(--foreground)] text-white"
                     : "bg-white text-[var(--foreground)] hover:bg-[var(--surface)]",

@@ -1,15 +1,18 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f6f1e8;
-  --surface: #fcf8f1;
-  --foreground: #14212f;
-  --muted: #5d6a76;
-  --line: #d6dbd2;
-  --accent: #b85d27;
-  --accent-dark: #8f471d;
-  --font-body: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-  --font-heading: Georgia, "Times New Roman", serif;
+  --background: #f3eadc;
+  --surface: #fff9ef;
+  --surface-strong: #efe0ca;
+  --foreground: #17201a;
+  --muted: #687067;
+  --line: #d9c9b2;
+  --accent: #a8532b;
+  --accent-dark: #713519;
+  --accent-soft: #ead1b8;
+  --charcoal: #101711;
+  --font-body: "Aptos", "Source Sans 3", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-heading: "Iowan Old Style", "Newsreader", Georgia, "Times New Roman", serif;
 }
 
 @theme inline {
@@ -38,9 +41,11 @@
   body {
     font-family: var(--font-body);
     background:
-      radial-gradient(circle at top left, rgba(184, 93, 39, 0.08), transparent 30%),
-      linear-gradient(180deg, #faf6ef 0%, var(--background) 35%, #f9f4ec 100%);
+      radial-gradient(circle at 18% 8%, rgba(168, 83, 43, 0.16), transparent 28rem),
+      radial-gradient(circle at 92% 12%, rgba(16, 23, 17, 0.08), transparent 22rem),
+      linear-gradient(180deg, #fff8ed 0%, var(--background) 44%, #f8efe2 100%);
     color: var(--foreground);
+    text-rendering: optimizeLegibility;
   }
 
   h1,
@@ -52,7 +57,7 @@
   .font-heading {
     font-family: var(--font-heading);
     color: var(--foreground);
-    letter-spacing: -0.03em;
+    letter-spacing: -0.045em;
   }
 
   p {
@@ -64,7 +69,26 @@
   }
 
   ::selection {
-    background: rgba(184, 93, 39, 0.18);
+    background: rgba(168, 83, 43, 0.2);
     color: var(--foreground);
+  }
+
+  a,
+  button,
+  summary {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+@layer utilities {
+  .texture-grid {
+    background-image:
+      linear-gradient(rgba(23, 32, 26, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(23, 32, 26, 0.06) 1px, transparent 1px);
+    background-size: 34px 34px;
+  }
+
+  .soft-panel {
+    box-shadow: 0 28px 90px rgba(23, 32, 26, 0.1);
   }
 }

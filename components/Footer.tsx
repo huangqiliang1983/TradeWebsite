@@ -40,20 +40,20 @@ export async function Footer({
   };
 
   return (
-    <footer className="border-t border-[var(--line)] bg-[var(--foreground)] text-white">
+    <footer className="border-t border-[rgba(255,255,255,0.08)] bg-[var(--charcoal)] text-white">
       <Container className="py-12 md:py-16">
-        <div className="grid gap-10 md:grid-cols-2 xl:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr]">
-          <div className="space-y-4">
-            <p className="text-sm font-medium uppercase tracking-[0.24em] text-white/60">
+        <div className="grid gap-10 md:grid-cols-2 xl:grid-cols-[1.35fr_0.75fr_0.75fr_0.75fr]">
+          <div className="space-y-5">
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--accent-soft)]">
               {dictionary.footer.eyebrow}
             </p>
-            <h2 className="max-w-md text-3xl text-white">
+            <h2 className="max-w-lg text-3xl leading-tight text-white sm:text-4xl">
               {dictionary.footer.title}
             </h2>
             <p className="max-w-lg text-base leading-8 text-white/72">
               {company.summary}
             </p>
-            <div className="space-y-2 text-sm text-white/72">
+            <div className="space-y-2 border-l border-white/12 pl-4 text-sm text-white/72">
               <p>{company.address}</p>
               <p>{company.phone}</p>
               <p>{company.email}</p>
@@ -65,7 +65,7 @@ export async function Footer({
           <FooterGroup title={dictionary.footer.conversions} items={footerNavigation.conversion} />
         </div>
 
-        <div className="mt-10 border-t border-white/10 pt-6 text-sm text-white/56">
+        <div className="mt-12 border-t border-white/10 pt-6 text-sm text-white/56">
           <p>
             © {new Date().getFullYear()} {company.companyName || siteConfig.companyName}. {dictionary.footer.copyright}
           </p>
@@ -84,7 +84,7 @@ function FooterGroup({
 }) {
   return (
     <div>
-      <h3 className="text-sm font-medium uppercase tracking-[0.24em] text-white/60">
+      <h3 className="text-sm font-semibold uppercase tracking-[0.24em] text-white/54">
         {title}
       </h3>
       <ul className="mt-4 space-y-3 text-sm text-white/72">
@@ -92,7 +92,7 @@ function FooterGroup({
           <li key={item.href}>
             <Link
               href={item.href}
-              className="transition hover:text-white"
+              className="transition hover:text-[var(--accent-soft)]"
               target={item.href.startsWith("http") ? "_blank" : undefined}
               rel={item.href.startsWith("http") ? "noreferrer noopener" : undefined}
             >

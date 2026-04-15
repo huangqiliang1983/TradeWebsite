@@ -27,7 +27,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           ref={ref}
           id={inputId}
           className={cx(
-            "min-h-12 w-full rounded-2xl border bg-white px-4 py-3 text-base text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-50",
+            "min-h-12 w-full rounded-2xl border bg-white/88 px-4 py-3 text-base text-[var(--foreground)] placeholder:text-[var(--muted)] transition focus:outline-none focus:ring-2 focus:ring-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-50",
             error
               ? "border-red-500 focus:ring-red-500"
               : "border-[var(--line)] hover:border-[var(--foreground)]/30",

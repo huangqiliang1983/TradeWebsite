@@ -6,14 +6,15 @@ type FAQListProps = {
 
 export function FAQList({ items }: FAQListProps) {
   return (
-    <div className="space-y-4">
+    <div className="divide-y divide-[var(--line)] rounded-[2rem] border border-[var(--line)] bg-[rgba(255,249,239,0.72)]">
       {items.map((item) => (
         <details
           key={item.question}
-          className="rounded-3xl border border-[var(--line)] bg-white p-5 open:border-[var(--accent)]/40"
+          className="group p-5 open:bg-white/70 sm:p-6"
         >
-          <summary className="cursor-pointer list-none pr-8 text-lg font-medium text-[var(--foreground)]">
-            {item.question}
+          <summary className="flex cursor-pointer list-none items-start justify-between gap-6 text-lg font-semibold text-[var(--foreground)]">
+            <span>{item.question}</span>
+            <span className="mt-1 text-[var(--accent)] transition group-open:rotate-45">+</span>
           </summary>
           <p className="mt-4 text-base leading-7 text-[var(--muted)]">{item.answer}</p>
         </details>

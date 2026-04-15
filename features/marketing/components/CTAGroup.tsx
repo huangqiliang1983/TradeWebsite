@@ -12,6 +12,7 @@ type CTAGroupProps = {
   primaryLabel?: string;
   secondaryHref?: string;
   secondaryLabel?: string;
+  tone?: "light" | "dark";
 };
 
 export async function CTAGroup({
@@ -20,6 +21,7 @@ export async function CTAGroup({
   primaryLabel,
   secondaryHref,
   secondaryLabel,
+  tone = "light",
 }: CTAGroupProps) {
   const company = await getPublishedCompanyProfile(locale);
   const dictionary = getMarketingDictionary(locale);
@@ -42,7 +44,10 @@ export async function CTAGroup({
         className={buttonStyles({
           variant: "ghost",
           size: "lg",
-          className: "justify-start sm:justify-center",
+          className:
+            tone === "dark"
+              ? "justify-start text-white/76 hover:bg-white/10 hover:text-white sm:justify-center"
+              : "justify-start sm:justify-center",
         })}
         href={company.whatsapp}
         target="_blank"
@@ -54,7 +59,10 @@ export async function CTAGroup({
         className={buttonStyles({
           variant: "ghost",
           size: "lg",
-          className: "justify-start sm:justify-center",
+          className:
+            tone === "dark"
+              ? "justify-start text-white/76 hover:bg-white/10 hover:text-white sm:justify-center"
+              : "justify-start sm:justify-center",
         })}
         href={`mailto:${company.email}`}
       >
