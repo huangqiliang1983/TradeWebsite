@@ -77,41 +77,46 @@ export default async function BlogPage() {
         }
       />
 
-      <Section>
+      <Section className="bg-white py-24 lg:py-32">
         <Container>
           <SectionHeading
             eyebrow={dictionary.blog.latestEyebrow}
             title={dictionary.blog.latestTitle}
           />
-          <div className="mt-10 space-y-5">
+          <div className="mt-12 space-y-5">
             {blogPosts.map((post) => (
               <article
                 key={post.slug}
-                className="rounded-[2rem] border border-[var(--line)] bg-white p-6 md:p-8"
+                className="card-base p-6 md:p-8 bg-white"
               >
-                <div className="flex flex-wrap gap-3 text-sm text-[var(--muted)]">
-                  <span>{post.category}</span>
+                <div className="flex flex-wrap items-center gap-3 text-xs font-semibold text-[var(--muted)]">
+                  <span className="rounded-md bg-[var(--accent-soft)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--accent)]">
+                    {post.category}
+                  </span>
                   <span>{post.readingTime}</span>
                   <span>{formatLocalizedDate(locale, post.publishedAt)}</span>
                 </div>
-                <h2 className="mt-4 text-3xl">
-                  <Link href={withLocalePath(locale, `/blog/${post.slug}`)} className="transition hover:text-[var(--accent)]">
+                <h2 className="mt-4 text-2xl font-bold">
+                  <Link href={withLocalePath(locale, `/blog/${post.slug}`)} className="hover:text-[var(--accent)] transition-colors">
                     {post.title}
                   </Link>
                 </h2>
-                <p className="mt-4 max-w-3xl text-base leading-8 text-[var(--muted)]">
+                <p className="mt-3 max-w-3xl text-sm leading-relaxed text-[var(--muted)]">
                   {post.summary}
                 </p>
                 <Link
                   href={withLocalePath(locale, `/blog/${post.slug}`)}
-                  className="mt-6 inline-flex text-base font-medium text-[var(--foreground)] underline decoration-[var(--accent)] underline-offset-4"
+                  className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-[var(--accent)] hover:gap-3 transition-all"
                 >
                   {dictionary.blog.readArticle}
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
                 </Link>
               </article>
             ))}
             {blogPosts.length === 0 ? (
-              <article className="rounded-[2rem] border border-dashed border-[var(--line)] bg-white p-6 text-base leading-8 text-[var(--muted)]">
+              <article className="card-base p-8 text-center text-[var(--muted)]">
                 {dictionary.blog.empty}
               </article>
             ) : null}

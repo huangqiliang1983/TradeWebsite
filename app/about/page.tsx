@@ -82,15 +82,15 @@ export default async function AboutPage() {
         }
       />
 
-      <Section>
+      <Section className="bg-white py-24 lg:py-32">
         <Container>
-          <div className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr]">
+          <div className="grid gap-16 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
             <SectionHeading
               eyebrow={dictionary.about.whatEyebrow}
               title={`${dictionary.about.whatTitle} ${company.companyName}.`}
               description={dictionary.about.whatDescription}
             />
-            <div className="space-y-5 text-base leading-8 text-[var(--muted)]">
+            <div className="space-y-6 text-base leading-relaxed text-[var(--muted)]">
               <p>
                 {company.companyName} {dictionary.about.introOne}
               </p>
@@ -102,40 +102,43 @@ export default async function AboutPage() {
         </Container>
       </Section>
 
-      <Section className="bg-[var(--surface)]">
+      <Section className="bg-[var(--background)] py-24 lg:py-32">
         <Container>
           <SectionHeading
             eyebrow={dictionary.about.projectEyebrow}
             title={dictionary.about.projectTitle}
             description={dictionary.about.projectDescription}
           />
-          <div className="mt-10 grid gap-5 md:grid-cols-2">
+          <div className="mt-12 grid gap-6 md:grid-cols-2">
             {milestones.map((item, index) => (
               <article
                 key={item}
-                className="rounded-[2rem] border border-[var(--line)] bg-white p-6"
+                className="card-base p-8 bg-white"
               >
-                <p className="text-sm uppercase tracking-[0.18em] text-[var(--accent)]">
-                  {dictionary.about.stage} {index + 1}
-                </p>
-                <h2 className="mt-3 text-2xl">{item}</h2>
+                <div className="flex items-center gap-4 mb-5">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--accent)] text-lg font-black text-white shadow-md shadow-blue-900/15">
+                    {String(index + 1).padStart(2, '0')}
+                  </div>
+                  <div className="h-px flex-1 bg-gradient-to-r from-[var(--accent)]/20 to-transparent" />
+                </div>
+                <h2 className="text-xl font-bold leading-snug">{item}</h2>
               </article>
             ))}
           </div>
         </Container>
       </Section>
 
-      <Section>
+      <Section className="bg-white py-24 lg:py-32">
         <Container>
           <SectionHeading
             eyebrow={dictionary.about.principlesEyebrow}
             title={dictionary.about.principlesTitle}
           />
-          <div className="mt-8 space-y-4">
-            {principles.map((principle) => (
-              <div key={principle} className="flex gap-4 border-t border-[var(--line)] py-4">
-                <span className="mt-3 h-2 w-2 rounded-full bg-[var(--accent)]" />
-                <p className="text-base leading-8 text-[var(--muted)]">{principle}</p>
+          <div className="mt-10 space-y-0">
+            {principles.map((principle, index) => (
+              <div key={`${principle}-${index}`} className="flex gap-5 border-b border-slate-100 py-6 px-4 -mx-4 hover:bg-slate-50/50 transition-colors rounded-xl group">
+                <span className="mt-2 h-2 w-2 rounded-full bg-[var(--accent)] flex-shrink-0 group-hover:scale-125 transition-transform" />
+                <p className="text-base leading-relaxed text-[var(--muted)] group-hover:text-[var(--foreground)] transition-colors">{principle}</p>
               </div>
             ))}
           </div>

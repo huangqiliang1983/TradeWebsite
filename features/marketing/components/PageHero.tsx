@@ -21,20 +21,25 @@ export function PageHero({
   aside,
 }: PageHeroProps) {
   return (
-    <Section className="texture-grid relative overflow-hidden border-b border-[rgba(23,32,26,0.1)] bg-[var(--surface)] pt-10 md:pt-14">
-      <div className="pointer-events-none absolute right-[-8rem] top-[-10rem] h-80 w-80 rounded-full bg-[var(--accent-soft)] opacity-40 blur-3xl" />
-      <Container>
-        <div className="relative grid gap-10 lg:grid-cols-[minmax(0,1.04fr)_minmax(320px,0.96fr)] lg:items-end">
+    <Section className="relative overflow-hidden bg-[var(--charcoal)] pt-10 pb-16 md:pt-14 md:pb-20">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -top-1/4 right-0 h-[500px] w-[500px] rounded-full bg-[var(--accent)]/8 blur-[120px]" />
+        <div className="absolute bottom-0 left-0 h-[300px] w-[300px] rounded-full bg-[var(--gold)]/6 blur-[80px]" />
+        <div className="absolute inset-0 texture-grid opacity-30" />
+      </div>
+
+      <Container className="relative">
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,1.04fr)_minmax(320px,0.96fr)] lg:items-end">
           <div className="space-y-6">
             {breadcrumbs}
             <div className="space-y-4">
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--accent)]">
+              <p className="eyebrow eyebrow-gold">
                 {eyebrow}
               </p>
-              <h1 className="max-w-3xl text-4xl leading-[1.02] sm:text-5xl lg:text-6xl">
+              <h1 className="max-w-3xl text-4xl leading-[1.05] text-white sm:text-5xl lg:text-6xl">
                 {title}
               </h1>
-              <p className="max-w-2xl text-base leading-8 text-[var(--muted)] sm:text-lg">
+              <p className="max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
                 {description}
               </p>
             </div>

@@ -7,6 +7,7 @@ import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { getMarketingDictionary } from "@/features/marketing/copy";
 import {
+  getPublishedBlogPosts,
   getPublishedCompanyProfile,
   getPublishedHomeFaq,
   getPublishedIndustries,
@@ -14,11 +15,13 @@ import {
 } from "@/features/marketing/public-content";
 import { CTAGroup } from "@/features/marketing/components/CTAGroup";
 import { FAQList } from "@/features/marketing/components/FAQList";
+import { SectionHeading } from "@/features/marketing/components/SectionHeading";
 import { localizedMeta, localizedVisualText, pickLocalizedText } from "@/features/marketing/localized-text";
 import {
   getLocalizedCompanyStats,
   getLocalizedHomeFaq,
   getLocalizedHomeHighlights,
+  localizeBlogPost,
   localizeCompany,
   localizeIndustry,
   localizeProduct,
@@ -33,7 +36,6 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata() {
   const locale = await getRequestLocale();
   const company = localizeCompany(locale, await getPublishedCompanyProfile(locale));
-
   return buildPageMetadata({
     title:
       locale === "en"
@@ -44,204 +46,265 @@ export async function generateMetadata() {
     path: "/",
     locale,
     canonicalUrl: locale === "en" ? company.seoCanonical : undefined,
-    keywords: [
-      "B2B sourcing",
-      "OEM manufacturing",
-      "export website",
-      "Google SEO",
-      "request a quote",
-    ],
+    keywords: ["B2B sourcing", "OEM manufacturing", "export website", "Google SEO", "request a quote"],
   });
 }
 
 export default async function Home() {
   const locale = await getRequestLocale();
   const dictionary = getMarketingDictionary(locale);
-  const [company, products, industries, homeFaq] = await Promise.all([
+  const [company, products, industries, blogPosts, homeFaq] = await Promise.all([
     getPublishedCompanyProfile(locale),
     getPublishedProducts(locale),
     getPublishedIndustries(locale),
+    getPublishedBlogPosts(locale),
     getPublishedHomeFaq(locale),
   ]);
-  const localizedCompany = localizeCompany(locale, company);
-  const localizedProducts = products.map((product) => localizeProduct(locale, product));
-  const localizedIndustries = industries.map((industry) => localizeIndustry(locale, industry));
-  const localizedFaq = getLocalizedHomeFaq(locale, homeFaq);
-  const featuredProducts = localizedProducts.slice(0, 3);
-  const featuredIndustries = localizedIndustries.slice(0, 3);
-  const companyStats = getLocalizedCompanyStats(locale);
-  const homeHighlights = getLocalizedHomeHighlights(locale);
-  const heroVisualTitle = pickLocalizedText(locale, localizedVisualText.homepageVisualTitle);
+  const localizedCompany    = localizeCompany(locale, company);
+  const localizedProducts   = products.map((p) => localizeProduct(locale, p));
+  const localizedIndustries = industries.map((i) => localizeIndustry(locale, i));
+  const localizedBlogPosts  = blogPosts.map((b) => localizeBlogPost(locale, b));
+  const localizedFaq        = getLocalizedHomeFaq(locale, homeFaq);
+  const featuredProducts    = localizedProducts.slice(0, 3);
+  const featuredIndustries  = localizedIndustries.slice(0, 3);
+  const featuredPosts       = localizedBlogPosts.slice(0, 3);
+  const companyStats        = getLocalizedCompanyStats(locale);
+  const homeHighlights      = getLocalizedHomeHighlights(locale);
+  const heroVisualTitle     = pickLocalizedText(locale, localizedVisualText.homepageVisualTitle);
 
   return (
     <>
       {localizedFaq.length > 0 ? <StructuredData data={faqSchema(localizedFaq)} /> : null}
 
-      {/* 🦾 HERO SECTION: Hardcore Dark Industrial */}
-      <Section className="relative flex min-h-[90vh] items-center overflow-hidden bg-black py-0 text-white">
-        <div className="texture-grid-dark pointer-events-none absolute inset-0 opacity-15" />
-        <div className="pointer-events-none absolute right-[-10%] top-[-10%] h-[600px] w-[600px] rounded-full bg-[var(--accent)]/10 blur-[120px]" />
-        
-        <Container className="relative py-20 lg:py-32">
-          <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
-            <div className="space-y-8">
-              <div className="inline-flex items-center gap-2 rounded-sm border border-[var(--accent)]/30 bg-[var(--accent)]/5 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-[var(--accent)]">
-                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--accent)]" />
+      {/* ════════════════════ HERO ════════════════════ */}
+      <section className="relative overflow-hidden bg-[var(--charcoal)] text-white">
+        {/* Background layers */}
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute inset-0 texture-dots opacity-100" />
+          <div className="absolute -top-32 right-0 h-[700px] w-[700px] rounded-full bg-[var(--accent-mid)]/20 blur-[140px]" />
+          <div className="absolute bottom-0 left-[-10%] h-[400px] w-[600px] rounded-full bg-[var(--gold)]/8 blur-[120px]" />
+        </div>
+        {/* Gold top stripe */}
+        <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-[var(--gold)] via-[var(--gold-light)] to-transparent" />
+
+        <Container className="relative z-10 py-20 lg:py-28 xl:py-36">
+          <div className="grid gap-16 lg:grid-cols-2 lg:items-center">
+
+            {/* Left: Copy */}
+            <div className="space-y-8 max-w-xl">
+              <p className="eyebrow eyebrow-gold">
+                <span className="inline-block h-4 w-px bg-[var(--gold)] opacity-70" />
                 {localizedCompany.tagline}
-              </div>
-              <h1 className="max-w-4xl text-5xl font-black leading-[1.1] tracking-tighter text-white sm:text-7xl lg:text-8xl xl:text-9xl">
+              </p>
+
+              <h1 className="text-4xl font-black leading-[1.1] tracking-tight text-white sm:text-5xl lg:text-6xl xl:text-7xl">
                 {dictionary.home.heroTitle}
               </h1>
-              <p className="max-w-xl text-lg leading-relaxed text-zinc-400 sm:text-xl">
+
+              <p className="text-lg leading-relaxed text-slate-300 sm:text-xl">
                 {localizedCompany.summary}
               </p>
-              <div className="flex flex-col gap-4 sm:flex-row">
+
+              {/* CTA row */}
+              <div className="flex flex-col gap-3 pt-1 sm:flex-row">
                 <Link
-                  className={buttonStyles({ variant: "primary", className: "h-14 px-10 text-lg uppercase tracking-wider font-extrabold" })}
+                  className={buttonStyles({
+                    variant: "gold",
+                    size: "xl",
+                    className: "shadow-xl shadow-[var(--gold)]/20",
+                  })}
                   href={`${withLocalePath(locale, "/contact")}#quote`}
                 >
                   {dictionary.cta.requestQuote}
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
                 </Link>
                 <Link
                   className={buttonStyles({
                     variant: "secondary",
-                    className: "h-14 px-10 text-lg uppercase tracking-wider font-extrabold bg-transparent border-white/20 text-white hover:bg-white hover:text-black",
+                    size: "xl",
+                    className: "border-white/15 bg-white/5 text-white hover:bg-white/10 hover:border-white/25",
                   })}
                   href={withLocalePath(locale, "/products")}
                 >
                   {dictionary.cta.viewProducts}
                 </Link>
               </div>
-            </div>
 
-            <div className="relative group">
-              <div className="absolute -inset-1 bg-gradient-to-r from-[var(--accent)] to-orange-900 opacity-20 blur-2xl transition duration-1000 group-hover:opacity-40" />
-              <div className="relative industrial-border overflow-hidden rounded-xl bg-zinc-900/50 backdrop-blur-xl">
-                <div className="flex border-b border-white/10 px-4 py-3 items-center justify-between">
-                  <div className="flex gap-1.5">
-                    <div className="h-2 w-2 rounded-full bg-zinc-700" />
-                    <div className="h-2 w-2 rounded-full bg-zinc-700" />
-                    <div className="h-2 w-2 rounded-full bg-zinc-700" />
-                  </div>
-                  <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">System Status: Active</span>
-                </div>
-                <Image
-                  src="/brand/operations.svg"
-                  alt={heroVisualTitle}
-                  width={960}
-                  height={720}
-                  priority
-                  className="h-auto w-full grayscale contrast-125 opacity-80 transition hover:grayscale-0 hover:opacity-100"
-                  sizes="(min-width: 1024px) 36rem, 100vw"
-                />
-                <div className="grid grid-cols-3 divide-x divide-white/10 border-t border-white/10 text-center">
-                  {companyStats.slice(0, 3).map((stat) => (
-                    <div key={stat.label} className="py-5 px-2 bg-gradient-to-b from-white/5 to-transparent">
-                      <p className="text-2xl font-black text-white sm:text-3xl">{stat.value}</p>
-                      <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-zinc-500">
-                        {stat.label}
-                      </p>
+              {/* Trust badges row */}
+              {companyStats.length > 0 && (
+                <div className="flex flex-wrap gap-6 border-t border-white/10 pt-8">
+                  {companyStats.slice(0, 4).map((s) => (
+                    <div key={s.label}>
+                      <p className="stat-number text-3xl text-white sm:text-4xl">{s.value}</p>
+                      <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-slate-400">{s.label}</p>
                     </div>
                   ))}
+                </div>
+              )}
+            </div>
+
+            {/* Right: Visual panel */}
+            <div className="relative hidden lg:block">
+              <div className="absolute -inset-4 rounded-3xl bg-[var(--gold)]/8 blur-2xl" />
+              <div className="card-dark relative overflow-hidden rounded-2xl">
+                {/* Fake browser chrome */}
+                <div className="flex items-center gap-1.5 border-b border-white/8 bg-white/[.03] px-5 py-3.5">
+                  <div className="h-2.5 w-2.5 rounded-full bg-red-400/70" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-yellow-400/70" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-green-400/70" />
+                  <span className="ml-3 flex-1 rounded bg-white/5 px-3 py-1 text-center text-[10px] text-slate-500">
+                    {localizedCompany.companyName}
+                  </span>
+                </div>
+                {/* Image */}
+                <div className="relative">
+                  <Image
+                    src="/brand/operations.svg"
+                    alt={heroVisualTitle}
+                    width={960}
+                    height={720}
+                    priority
+                    className="h-auto w-full"
+                    sizes="(min-width: 1024px) 36rem, 100vw"
+                  />
+                  {/* Overlay gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[var(--charcoal)]/80 via-[var(--charcoal)]/20 to-transparent" />
+                  {/* Floating stat pills */}
+                  <div className="absolute bottom-0 left-0 right-0 grid grid-cols-3 gap-2 p-5">
+                    {companyStats.slice(0, 3).map((s) => (
+                      <div key={s.label} className="rounded-xl border border-white/10 bg-black/50 p-3 text-center backdrop-blur-sm">
+                        <p className="stat-number text-xl text-white">{s.value}</p>
+                        <p className="mt-1 text-[9px] font-semibold uppercase tracking-wider text-slate-400">{s.label}</p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </Container>
-      </Section>
+      </section>
 
-      {/* 🏭 HIGHLIGHTS SECTION: Industrial Bento */}
-      <Section className="bg-zinc-950 border-t border-white/5">
+      {/* ════════════════════ HIGHLIGHTS ════════════════════ */}
+      <Section className="bg-white">
         <Container>
-          <div className="mb-16 grid gap-8 lg:grid-cols-2 lg:items-end">
-            <div className="space-y-4">
-               <p className="text-sm font-bold uppercase tracking-[0.3em] text-[var(--accent)]">{dictionary.home.whyEyebrow}</p>
-               <h2 className="text-4xl font-black text-white sm:text-5xl lg:text-6xl uppercase">{dictionary.home.whyTitle}</h2>
-            </div>
-            <p className="text-lg text-zinc-400 max-w-xl">{dictionary.home.whyDescription}</p>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-3">
-            {homeHighlights.map((highlight, index) => (
-              <article
-                key={highlight.title}
-                className="group industrial-border p-10 rounded-xl transition hover:border-[var(--accent)]/50"
-              >
-                <div className="mb-8 font-black text-6xl text-white/5 group-hover:text-[var(--accent)]/10 transition-colors">
-                  0{index + 1}
+          <SectionHeading
+            eyebrow={dictionary.home.whyEyebrow}
+            title={dictionary.home.whyTitle}
+            description={dictionary.home.whyDescription}
+          />
+          <div className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {homeHighlights.map((h, idx) => (
+              <article key={h.title} className="card group p-8">
+                <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--accent-soft)]">
+                  <span className="stat-number text-xl text-[var(--accent)]">
+                    {String(idx + 1).padStart(2, "0")}
+                  </span>
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-4 uppercase tracking-tight">{highlight.title}</h3>
-                <p className="text-zinc-400 leading-relaxed">
-                  {highlight.description}
-                </p>
+                <h3 className="mb-3 text-xl font-bold">{h.title}</h3>
+                <p className="text-sm leading-relaxed text-[var(--muted)]">{h.description}</p>
+                {/* Accent bar on hover */}
+                <div className="mt-6 h-[2px] w-0 bg-gradient-to-r from-[var(--gold)] to-[var(--gold-light)] rounded-full transition-all duration-500 group-hover:w-12" />
               </article>
             ))}
           </div>
         </Container>
       </Section>
 
-      {/* 🚀 STATS STRIP */}
-      <Section className="bg-[var(--accent)] py-12">
-        <Container>
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {companyStats.map((stat) => (
-              <div key={stat.label} className="text-center sm:text-left border-l-4 border-black/20 pl-6">
-                <p className="text-4xl font-black text-black sm:text-6xl">{stat.value}</p>
-                <p className="mt-2 text-xs font-black uppercase tracking-widest text-black/60">
-                  {stat.label}
+      {/* ════════════════════ STATS BANNER ════════════════════ */}
+      <section className="relative overflow-hidden bg-[var(--accent)] py-16 text-white lg:py-20">
+        <div className="pointer-events-none absolute inset-0 texture-dots opacity-30" />
+        <div className="absolute top-0 left-0 right-0 h-px bg-white/10" />
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-black/20" />
+        <Container className="relative">
+          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+            {companyStats.map((s) => (
+              <div key={s.label} className="text-center">
+                <p className="stat-number text-5xl text-white lg:text-6xl">{s.value}</p>
+                <p className="mt-3 text-xs font-semibold uppercase tracking-widest text-blue-200">
+                  {s.label}
                 </p>
+                <div className="mx-auto mt-4 h-[2px] w-8 rounded-full bg-[var(--gold-light)]/60" />
               </div>
             ))}
           </div>
         </Container>
-      </Section>
+      </section>
 
-      {featuredProducts.length > 0 ? (
-        <Section className="bg-zinc-900">
+      {/* ════════════════════ PRODUCTS ════════════════════ */}
+      {featuredProducts.length > 0 && (
+        <Section className="bg-[var(--background)]">
           <Container>
-            <div className="mb-16">
-              <p className="text-sm font-bold uppercase tracking-[0.3em] text-[var(--accent)]">
-                {dictionary.home.productsEyebrow}
-              </p>
-              <h2 className="mt-4 text-4xl font-black uppercase text-white sm:text-5xl">
-                {dictionary.home.productsTitle}
-              </h2>
+            <div className="mb-14 flex flex-col items-start gap-8 md:flex-row md:items-end md:justify-between">
+              <SectionHeading
+                eyebrow={dictionary.home.productsEyebrow}
+                title={dictionary.home.productsTitle}
+                description={dictionary.home.productsDescription}
+              />
+              <Link
+                href={withLocalePath(locale, "/products")}
+                className={buttonStyles({ variant: "outline", size: "md", className: "shrink-0" })}
+              >
+                {dictionary.cta.viewProducts}
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
             </div>
-            <div className="grid gap-6">
+
+            <div className="grid gap-8 lg:grid-cols-3">
               {featuredProducts.map((product) => (
-                <article
-                  key={product.slug}
-                  className="group flex flex-col overflow-hidden rounded-xl transition-all hover:border-[var(--accent)] md:flex-row industrial-border"
-                >
-                  <div className="flex-1 p-8">
-                    <span className="text-xs font-bold uppercase tracking-widest text-[var(--accent)]">
+                <article key={product.slug} className="card group overflow-hidden bg-white">
+                  {/* Product image */}
+                  <div className="aspect-[4/3] overflow-hidden bg-[var(--surface-raised)] relative">
+                    <Image
+                      src={product.heroImage}
+                      alt={product.heroImageAlt}
+                      width={600}
+                      height={450}
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <span className="absolute top-3 left-3 rounded-md bg-[var(--accent)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-sm">
                       {product.category}
                     </span>
-                    <h3 className="mt-2 text-3xl font-bold uppercase text-white transition-colors group-hover:text-[var(--accent)]">
-                      <Link href={withLocalePath(locale, `/products/${product.slug}`)}>
+                  </div>
+
+                  <div className="p-7">
+                    <h3 className="mb-2 text-xl font-bold leading-snug">
+                      <Link
+                        href={withLocalePath(locale, `/products/${product.slug}`)}
+                        className="hover:text-[var(--accent)] transition-colors"
+                      >
                         {product.name}
                       </Link>
                     </h3>
-                    <p className="mt-6 max-w-2xl leading-relaxed text-zinc-400">
+                    <p className="mb-5 text-sm leading-relaxed text-[var(--muted)] line-clamp-2">
                       {product.description}
                     </p>
-                  </div>
-                  <div className="flex w-full flex-col justify-center space-y-4 border-t border-white/5 bg-black/40 p-8 md:w-72 md:border-l md:border-t-0">
-                    <div className="flex justify-between text-sm">
-                      <span className="font-bold uppercase text-zinc-500">{dictionary.home.moq}</span>
-                      <span className="font-bold text-white">{product.moq}</span>
+
+                    {/* Key specs */}
+                    <div className="mb-5 space-y-2.5 rounded-xl bg-[var(--background)] p-4">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-[var(--muted)]">{dictionary.home.moq}</span>
+                        <span className="font-semibold text-[var(--foreground)]">{product.moq}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-[var(--muted)]">{dictionary.home.leadTime}</span>
+                        <span className="font-semibold text-[var(--foreground)]">{product.leadTime}</span>
+                      </div>
                     </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="font-bold uppercase text-zinc-500">
-                        {dictionary.home.leadTime}
-                      </span>
-                      <span className="font-bold text-white">{product.leadTime}</span>
-                    </div>
+
                     <Link
                       href={withLocalePath(locale, `/products/${product.slug}`)}
-                      className="mt-4 block w-full border border-[var(--accent)] py-3 text-center text-xs font-bold uppercase tracking-widest text-[var(--accent)] transition hover:bg-[var(--accent)] hover:text-black"
+                      className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--accent)] transition-all hover:gap-3"
                     >
-                      {dictionary.products.openDetail}
+                      {dictionary.products?.openDetail ?? "View Details"}
+                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                      </svg>
                     </Link>
                   </div>
                 </article>
@@ -249,78 +312,170 @@ export default async function Home() {
             </div>
           </Container>
         </Section>
-      ) : null}
+      )}
 
-      {featuredIndustries.length > 0 ? (
-        <Section className="bg-zinc-950">
+      {/* ════════════════════ INDUSTRIES ════════════════════ */}
+      {featuredIndustries.length > 0 && (
+        <Section className="bg-white">
           <Container>
-            <div className="mb-16 text-center">
-              <h2 className="text-4xl font-black uppercase text-white sm:text-5xl">
-                {dictionary.home.industryTitle}
-              </h2>
-            </div>
-            <div className="grid gap-8 md:grid-cols-3">
+            <SectionHeading
+              eyebrow={dictionary.home.industryEyebrow}
+              title={dictionary.home.industryTitle}
+              description={dictionary.home.industryDescription}
+              align="center"
+            />
+
+            <div className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {featuredIndustries.map((industry) => (
-                <article
-                  key={industry.slug}
-                  className="group relative border-t border-white/10 pt-8 transition-colors hover:border-[var(--accent)]"
-                >
-                  <h3 className="mb-4 text-2xl font-bold uppercase text-white group-hover:text-[var(--accent)]">
-                    <Link href={withLocalePath(locale, `/industries/${industry.slug}`)}>
-                      {industry.name}
+                <article key={industry.slug} className="card group relative overflow-hidden p-8">
+                  {/* Gold accent corner */}
+                  <div className="absolute right-0 top-0 h-20 w-20 translate-x-10 -translate-y-10 rounded-full bg-[var(--gold-soft)] transition-all duration-500 group-hover:translate-x-6 group-hover:-translate-y-6" />
+
+                  <div className="relative">
+                    <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--gold-soft)]">
+                      <svg className="h-6 w-6 text-[var(--gold)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
+                      </svg>
+                    </div>
+
+                    <h3 className="mb-3 text-xl font-bold">
+                      <Link
+                        href={withLocalePath(locale, `/industries/${industry.slug}`)}
+                        className="hover:text-[var(--gold)] transition-colors"
+                      >
+                        {industry.name}
+                      </Link>
+                    </h3>
+                    <p className="mb-5 text-sm leading-relaxed text-[var(--muted)] line-clamp-3">
+                      {industry.summary}
+                    </p>
+                    <Link
+                      href={withLocalePath(locale, `/industries/${industry.slug}`)}
+                      className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--accent)] transition-all hover:gap-3"
+                    >
+                      {dictionary.industries?.open ?? "Explore"}
+                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                      </svg>
                     </Link>
-                  </h3>
-                  <p className="text-sm leading-relaxed text-zinc-500">{industry.summary}</p>
-                  <div className="mt-6 h-1 w-0 bg-[var(--accent)] transition-all duration-500 group-hover:w-full" />
+                  </div>
                 </article>
               ))}
             </div>
           </Container>
         </Section>
-      ) : null}
+      )}
 
-      {localizedFaq.length > 0 ? (
-        <Section className="bg-[var(--surface)]">
+      {/* ════════════════════ BLOG INSIGHTS ════════════════════ */}
+      {featuredPosts.length > 0 && (
+        <Section className="bg-[var(--background)]">
           <Container>
-            <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
-              <div className="space-y-4">
-                <p className="text-sm font-bold uppercase tracking-[0.3em] text-[var(--accent)]">
-                  {dictionary.home.faqEyebrow}
-                </p>
-                <h2 className="text-4xl font-black text-[var(--foreground)] sm:text-5xl">
-                  {dictionary.home.faqTitle}
-                </h2>
-                <p className="text-base leading-8 text-[var(--muted)]">
-                  {dictionary.home.faqDescription}
-                </p>
+            <div className="mb-14 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+              <SectionHeading
+                eyebrow={dictionary.home.insightsEyebrow}
+                title={dictionary.home.insightsTitle}
+                description={dictionary.home.insightsDescription}
+              />
+              <Link
+                href={withLocalePath(locale, "/blog")}
+                className={buttonStyles({ variant: "outline", size: "md", className: "shrink-0" })}
+              >
+                {(dictionary.home as Record<string, string>)["viewAllPosts"] ?? "All Posts"}
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {featuredPosts.map((post) => (
+                <article key={post.slug} className="card group flex flex-col overflow-hidden bg-white">
+                  <div className="flex-1 p-7">
+                    <div className="mb-4 flex flex-wrap items-center gap-2">
+                      {post.category && (
+                        <span className="rounded-full bg-[var(--accent-soft)] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[var(--accent)]">
+                          {post.category}
+                        </span>
+                      )}
+                      {post.readingTime && (
+                        <span className="text-xs text-[var(--muted)]">{post.readingTime}</span>
+                      )}
+                    </div>
+                    <h3 className="mb-3 text-lg font-bold leading-snug">
+                      <Link
+                        href={withLocalePath(locale, `/blog/${post.slug}`)}
+                        className="hover:text-[var(--accent)] transition-colors"
+                      >
+                        {post.title}
+                      </Link>
+                    </h3>
+                    <p className="text-sm leading-relaxed text-[var(--muted)] line-clamp-3">{post.summary}</p>
+                  </div>
+                  <div className="border-t border-[var(--line)] px-7 py-4">
+                    <Link
+                      href={withLocalePath(locale, `/blog/${post.slug}`)}
+                      className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--accent)] transition-all hover:gap-3"
+                    >
+                      Read more
+                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </Link>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </Container>
+        </Section>
+      )}
+
+      {/* ════════════════════ FAQ ════════════════════ */}
+      {localizedFaq.length > 0 && (
+        <Section className="bg-white">
+          <Container>
+            <div className="grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
+              <div className="lg:sticky lg:top-28">
+                <SectionHeading
+                  eyebrow={dictionary.home.faqEyebrow}
+                  title={dictionary.home.faqTitle}
+                  description={dictionary.home.faqDescription}
+                />
+                <div className="mt-10 hidden lg:block">
+                  <CTAGroup locale={locale} />
+                </div>
               </div>
               <FAQList items={localizedFaq} />
             </div>
           </Container>
         </Section>
-      ) : null}
+      )}
 
-      {/* 📢 FINAL CTA: High Contrast Industrial */}
-      <Section className="bg-black py-0">
-        <Container className="py-20 lg:py-40">
-           <div className="relative industrial-border bg-[var(--accent)] p-12 lg:p-24 rounded-3xl overflow-hidden shadow-[0_0_100px_rgba(249,115,22,0.1)]">
-              <div className="texture-grid-dark pointer-events-none absolute inset-0 opacity-20" />
-              <div className="relative z-10 grid gap-12 lg:grid-cols-2 lg:items-center">
-                 <div className="space-y-6">
-                    <h2 className="text-5xl font-black text-black leading-none uppercase xl:text-7xl">
-                      {dictionary.home.finalTitle}
-                    </h2>
-                    <p className="text-black/70 text-lg font-bold">
-                      {dictionary.home.finalDescription}
-                    </p>
-                 </div>
-                 <div className="flex justify-center lg:justify-end">
-                    <CTAGroup locale={locale} tone="dark" />
-                 </div>
-              </div>
-           </div>
+      {/* ════════════════════ FINAL CTA ════════════════════ */}
+      <section className="relative overflow-hidden bg-[var(--charcoal)] py-20 text-white lg:py-28">
+        <div className="pointer-events-none absolute inset-0 texture-dots opacity-100" />
+        <div className="absolute -top-40 right-0 h-[500px] w-[500px] rounded-full bg-[var(--accent-mid)]/20 blur-[120px]" />
+        <div className="absolute bottom-0 left-0 h-[400px] w-[400px] rounded-full bg-[var(--gold)]/8 blur-[100px]" />
+        {/* Gold top stripe */}
+        <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-[var(--gold)] via-[var(--gold-light)] to-transparent" />
+
+        <Container className="relative z-10">
+          <div className="mx-auto max-w-3xl space-y-8 text-center">
+            <p className="eyebrow eyebrow-gold justify-center">
+              <span className="inline-block h-px w-6 bg-[var(--gold)] opacity-70" />
+              {dictionary.home.finalEyebrow}
+            </p>
+            <h2 className="text-4xl font-black leading-tight text-white sm:text-5xl lg:text-6xl">
+              {dictionary.home.finalTitle}
+            </h2>
+            <p className="mx-auto max-w-xl text-lg leading-relaxed text-slate-400">
+              {dictionary.home.finalDescription}
+            </p>
+            <div className="pt-2">
+              <CTAGroup locale={locale} tone="dark" />
+            </div>
+          </div>
         </Container>
-      </Section>
+      </section>
     </>
   );
 }

@@ -133,9 +133,9 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
         }
       />
 
-      <Section>
+      <Section className="bg-white py-24 lg:py-32">
         <Container>
-          <div className="grid gap-12 lg:grid-cols-[1fr_0.9fr]">
+          <div className="grid gap-16 lg:grid-cols-[1fr_0.9fr]">
             <div>
               <SectionHeading
                 eyebrow={dictionary.productDetail.sellingEyebrow}
@@ -143,48 +143,48 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
               />
               <div className="mt-8 space-y-4">
                 {localizedProduct.sellingPoints.map((point) => (
-                  <div key={point} className="flex gap-4 border-t border-[var(--line)] py-4">
-                    <span className="mt-3 h-2 w-2 rounded-full bg-[var(--accent)]" />
-                    <p className="text-base leading-8 text-[var(--muted)]">{point}</p>
+                  <div key={point} className="flex gap-4 border-t border-slate-100 py-4">
+                    <span className="mt-3 h-2 w-2 rounded-full bg-[var(--accent)] flex-shrink-0" />
+                    <p className="text-base leading-relaxed text-[var(--muted)]">{point}</p>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="rounded-[2rem] border border-[var(--line)] bg-[var(--surface)] p-6">
-              <p className="text-sm uppercase tracking-[0.18em] text-[var(--accent)]">
+            <div className="rounded-2xl border border-[var(--line)] bg-[var(--background)] p-6 shadow-sm">
+              <p className="eyebrow eyebrow-accent mb-6">
                 {dictionary.productDetail.facts}
               </p>
-              <dl className="mt-6 space-y-4">
-                <div className="grid gap-2 border-t border-[var(--line)] pt-4 sm:grid-cols-[auto_1fr] sm:items-start sm:justify-between sm:gap-4">
-                  <dt className="text-sm uppercase tracking-[0.18em] text-[var(--muted)]">{dictionary.products.sku}</dt>
-                  <dd className="text-base text-[var(--foreground)] sm:text-right">{localizedProduct.sku}</dd>
+              <dl className="space-y-4">
+                <div className="flex justify-between items-center border-t border-[var(--line)] pt-4">
+                  <dt className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">{dictionary.products.sku}</dt>
+                  <dd className="text-sm font-bold text-[var(--foreground)]">{localizedProduct.sku}</dd>
                 </div>
-                <div className="grid gap-2 border-t border-[var(--line)] pt-4 sm:grid-cols-[auto_1fr] sm:items-start sm:justify-between sm:gap-4">
-                  <dt className="text-sm uppercase tracking-[0.18em] text-[var(--muted)]">{dictionary.products.moq}</dt>
-                  <dd className="text-base text-[var(--foreground)] sm:text-right">{localizedProduct.moq}</dd>
+                <div className="flex justify-between items-center border-t border-[var(--line)] pt-4">
+                  <dt className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">{dictionary.products.moq}</dt>
+                  <dd className="text-sm font-bold text-[var(--foreground)]">{localizedProduct.moq}</dd>
                 </div>
-                <div className="grid gap-2 border-t border-[var(--line)] pt-4 sm:grid-cols-[auto_1fr] sm:items-start sm:justify-between sm:gap-4">
-                  <dt className="text-sm uppercase tracking-[0.18em] text-[var(--muted)]">{dictionary.products.leadTime}</dt>
-                  <dd className="text-base text-[var(--foreground)] sm:text-right">{localizedProduct.leadTime}</dd>
+                <div className="flex justify-between items-center border-t border-[var(--line)] pt-4">
+                  <dt className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">{dictionary.products.leadTime}</dt>
+                  <dd className="text-sm font-bold text-[var(--foreground)]">{localizedProduct.leadTime}</dd>
                 </div>
               </dl>
               <div className="mt-6 grid gap-3 md:grid-cols-3 lg:grid-cols-1">
-                <div className="rounded-[1.5rem] border border-[var(--line)] bg-white p-4">
-                  <p className="text-sm uppercase tracking-[0.18em] text-[var(--accent)]">{dictionary.productDetail.gallery}</p>
-                  <p className="mt-2 text-sm leading-7 text-[var(--muted)]">
+                <div className="rounded-xl border border-[var(--line)] bg-white p-4">
+                  <p className="text-xs font-bold uppercase tracking-wider text-[var(--accent)]">{dictionary.productDetail.gallery}</p>
+                  <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">
                     {dictionary.productDetail.galleryDescription}
                   </p>
                 </div>
-                <div className="rounded-[1.5rem] border border-[var(--line)] bg-white p-4">
-                  <p className="text-sm uppercase tracking-[0.18em] text-[var(--accent)]">{dictionary.productDetail.video}</p>
-                  <p className="mt-2 text-sm leading-7 text-[var(--muted)]">
+                <div className="rounded-xl border border-[var(--line)] bg-white p-4">
+                  <p className="text-xs font-bold uppercase tracking-wider text-[var(--accent)]">{dictionary.productDetail.video}</p>
+                  <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">
                     {dictionary.productDetail.videoDescription}
                   </p>
                 </div>
-                <div className="rounded-[1.5rem] border border-[var(--line)] bg-white p-4">
-                  <p className="text-sm uppercase tracking-[0.18em] text-[var(--accent)]">{dictionary.productDetail.downloads}</p>
-                  <p className="mt-2 text-sm leading-7 text-[var(--muted)]">
+                <div className="rounded-xl border border-[var(--line)] bg-white p-4">
+                  <p className="text-xs font-bold uppercase tracking-wider text-[var(--accent)]">{dictionary.productDetail.downloads}</p>
+                  <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">
                     {dictionary.productDetail.downloadsDescription}
                   </p>
                 </div>
@@ -194,27 +194,27 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
         </Container>
       </Section>
 
-      <Section className="bg-[var(--surface)]">
+      <Section className="bg-[var(--background)] py-24 lg:py-32">
         <Container>
           <SectionHeading
             eyebrow={dictionary.productDetail.parametersEyebrow}
             title={dictionary.productDetail.parametersTitle}
           />
-          <div className="mt-10 rounded-[2rem] border border-[var(--line)] bg-white p-6">
+          <div className="mt-10 rounded-2xl border border-[var(--line)] bg-white p-6 md:p-8 shadow-sm">
             <dl className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
               {localizedProduct.specifications.map((spec) => (
-                <div key={spec.label} className="border-t border-[var(--line)] pt-4">
-                  <dt className="text-sm uppercase tracking-[0.18em] text-[var(--muted)]">
+                <div key={spec.label} className="border-t border-slate-100 pt-4">
+                  <dt className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">
                     {spec.label}
                   </dt>
-                  <dd className="mt-2 text-base leading-8 text-[var(--foreground)]">
+                  <dd className="mt-2 text-sm leading-relaxed text-[var(--foreground)]">
                     {spec.value}
                   </dd>
                 </div>
               ))}
             </dl>
             {localizedProduct.specifications.length === 0 ? (
-              <p className="text-base leading-8 text-[var(--muted)]">
+              <p className="text-base leading-relaxed text-[var(--muted)]">
                 {dictionary.productDetail.emptySpecs}
               </p>
             ) : null}
@@ -222,23 +222,23 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
         </Container>
       </Section>
 
-      <Section>
+      <Section className="bg-white py-24 lg:py-32">
         <Container>
-          <div className="grid gap-10 xl:grid-cols-[0.7fr_1fr_0.95fr]">
+          <div className="grid gap-12 xl:grid-cols-[0.7fr_1fr_0.95fr]">
             <div>
               <SectionHeading
                 eyebrow={dictionary.productDetail.faqEyebrow}
                 title={dictionary.productDetail.faqTitle}
               />
-              <div className="mt-8">{localizedProduct.faq.length > 0 ? <FAQList items={localizedProduct.faq} /> : <p className="text-base leading-8 text-[var(--muted)]">{dictionary.productDetail.emptyFaq}</p>}</div>
+              <div className="mt-8">{localizedProduct.faq.length > 0 ? <FAQList items={localizedProduct.faq} /> : <p className="text-base leading-relaxed text-[var(--muted)]">{dictionary.productDetail.emptyFaq}</p>}</div>
             </div>
 
-            <div className="rounded-[2rem] border border-[var(--line)] bg-white p-6">
-              <p className="text-base leading-8 text-[var(--muted)]">
+            <div className="rounded-2xl border border-[var(--line)] bg-[var(--background)] p-6 shadow-sm">
+              <p className="text-sm leading-relaxed text-[var(--muted)]">
                 {dictionary.productDetail.browseText}{" "}
                 <Link
                   href={productsHref}
-                  className="text-[var(--foreground)] underline underline-offset-4"
+                  className="font-semibold text-[var(--foreground)] underline underline-offset-4 decoration-[var(--accent)] hover:text-[var(--accent)] transition-colors"
                 >
                   {dictionary.productDetail.browseLink}
                 </Link>

@@ -102,9 +102,14 @@ describe("Home Page", () => {
 
     expect(
       screen.getByRole("heading", {
-        name: /industrial sourcing pages that read clearly/i,
+        name: /industrial sourcing pages/i,
       }),
     ).toBeInTheDocument();
     expect(screen.getAllByRole("link", { name: /request a quote/i }).length).toBeGreaterThan(0);
+    expect(
+      screen.getByRole("heading", {
+        name: /ready to turn traffic into qualified inquiries/i,
+      }),
+    ).toBeInTheDocument();
   });
 });

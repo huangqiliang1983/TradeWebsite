@@ -149,22 +149,22 @@ export function InquiryForm({
     <div
       id={inquiryType === "QUOTE" || sourcePage.endsWith("/contact") ? "quote" : "contact-form"}
       className={cx(
-        "soft-panel rounded-[2rem] border border-[rgba(23,32,26,0.1)] bg-[var(--surface)] p-6 sm:p-8",
+        "rounded-2xl border border-[var(--line)] bg-white p-6 sm:p-8 shadow-sm",
         className,
       )}
     >
-      <div className="space-y-3">
-        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--accent)]">
+      <div className="space-y-3 pb-6 border-b border-slate-100">
+        <p className="eyebrow eyebrow-accent">
           {inquiryType === "QUOTE" ? dictionary.form.quoteEyebrow : dictionary.form.contactEyebrow}
         </p>
-        <h2 className="text-2xl">{title}</h2>
-        <p className="text-base leading-7 text-[var(--muted)]">{description}</p>
+        <h2 className="text-2xl font-bold">{title}</h2>
+        <p className="text-sm leading-relaxed text-[var(--muted)]">{description}</p>
       </div>
 
       <form
         key={formKey}
         action={formAction}
-        className="mt-6 space-y-4"
+        className="mt-6 space-y-5"
         onSubmit={handleClientSubmit}
       >
         <input name="inquiryType" type="hidden" value={state.values.inquiryType} />
@@ -277,10 +277,10 @@ export function InquiryForm({
         <div
           aria-live="polite"
           className={cx(
-            "rounded-2xl px-4 py-3 text-sm",
-            state.status === "success" && "bg-emerald-50 text-emerald-800",
-            state.status === "error" && "bg-red-50 text-red-700",
-            state.status === "idle" && "bg-[var(--surface)] text-[var(--muted)]",
+            "rounded-xl px-4 py-3 text-sm",
+            state.status === "success" && "bg-emerald-50 text-emerald-800 border border-emerald-200",
+            state.status === "error" && "bg-red-50 text-red-700 border border-red-200",
+            state.status === "idle" && "bg-slate-50 text-[var(--muted)] border border-slate-200",
           )}
         >
           {state.status === "success"
@@ -306,7 +306,7 @@ function SubmitButton({
   return (
     <button
       type="submit"
-          className="inline-flex min-h-12 w-full items-center justify-center rounded-full border border-[var(--accent)] bg-[var(--accent)] px-6 text-sm font-semibold text-white shadow-[0_14px_32px_rgba(168,83,43,0.22)] transition hover:-translate-y-0.5 hover:border-[var(--accent-dark)] hover:bg-[var(--accent-dark)] disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
+      className="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-[var(--accent)] px-8 text-sm font-bold text-white shadow-md shadow-blue-900/15 transition-all duration-200 hover:-translate-y-0.5 hover:bg-[var(--accent-dark)] hover:shadow-lg hover:shadow-blue-900/25 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 sm:w-auto"
       disabled={pending}
     >
       {pending ? pendingLabel : label}

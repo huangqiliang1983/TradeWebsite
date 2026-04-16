@@ -118,16 +118,16 @@ export default async function IndustryDetailPage({ params }: IndustryPageProps) 
         }
       />
 
-      <Section>
+      <Section className="bg-white py-24 lg:py-32">
         <Container>
-          <div className="grid gap-10 lg:grid-cols-2">
+          <div className="grid gap-16 lg:grid-cols-2">
             <div>
               <SectionHeading eyebrow={dictionary.industryDetail.focusEyebrow} title={dictionary.industryDetail.focusTitle} />
               <div className="mt-8 space-y-4">
                 {localizedIndustry.sections[0]?.paragraphs.map((challenge) => (
-                  <div key={challenge} className="flex gap-4 border-t border-[var(--line)] py-4">
-                    <span className="mt-3 h-2 w-2 rounded-full bg-[var(--accent)]" />
-                    <p className="text-base leading-8 text-[var(--muted)]">{challenge}</p>
+                  <div key={challenge} className="flex gap-4 border-t border-slate-100 py-4">
+                    <span className="mt-3 h-2 w-2 rounded-full bg-[var(--accent)] flex-shrink-0" />
+                    <p className="text-base leading-relaxed text-[var(--muted)]">{challenge}</p>
                   </div>
                 ))}
               </div>
@@ -136,9 +136,9 @@ export default async function IndustryDetailPage({ params }: IndustryPageProps) 
               <SectionHeading eyebrow={dictionary.industryDetail.implementationEyebrow} title={dictionary.industryDetail.implementationTitle} />
               <div className="mt-8 space-y-4">
                 {(localizedIndustry.sections[1]?.paragraphs ?? localizedIndustry.sections[0]?.bullets ?? []).map((outcome) => (
-                  <div key={outcome} className="flex gap-4 border-t border-[var(--line)] py-4">
-                    <span className="mt-3 h-2 w-2 rounded-full bg-[var(--accent)]" />
-                    <p className="text-base leading-8 text-[var(--muted)]">{outcome}</p>
+                  <div key={outcome} className="flex gap-4 border-t border-slate-100 py-4">
+                    <span className="mt-3 h-2 w-2 rounded-full bg-[var(--gold)] flex-shrink-0" />
+                    <p className="text-base leading-relaxed text-[var(--muted)]">{outcome}</p>
                   </div>
                 ))}
               </div>
@@ -147,22 +147,22 @@ export default async function IndustryDetailPage({ params }: IndustryPageProps) 
         </Container>
       </Section>
 
-      <Section className="bg-[var(--surface)]">
+      <Section className="bg-[var(--background)] py-24 lg:py-32">
         <Container>
           <SectionHeading
             eyebrow={dictionary.industryDetail.detailEyebrow}
             title={dictionary.industryDetail.detailTitle}
           />
-          <div className="mt-10 rounded-[2rem] border border-[var(--line)] bg-white p-6 md:p-8">
+          <div className="mt-10 rounded-2xl border border-[var(--line)] bg-white p-6 md:p-8 shadow-sm">
             {localizedIndustry.sections.length > 0 ? (
               <ArticleSections sections={localizedIndustry.sections} />
             ) : (
-              <p className="text-base leading-8 text-[var(--muted)]">
+              <p className="text-base leading-relaxed text-[var(--muted)]">
                 {dictionary.industryDetail.empty}
               </p>
             )}
           </div>
-          <div className="mt-8">
+          <div className="mt-10">
             <CTAGroup locale={locale} />
           </div>
         </Container>

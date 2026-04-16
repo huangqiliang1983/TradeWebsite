@@ -79,51 +79,63 @@ export default async function ProductsPage() {
         }
       />
 
-      <Section>
+      <Section className="bg-white py-24 lg:py-32">
         <Container>
           <SectionHeading
             eyebrow={dictionary.products.layoutEyebrow}
             title={dictionary.products.layoutTitle}
           />
-          <div className="mt-10 space-y-5">
+          <div className="mt-12 space-y-5">
             {products.map((product) => (
               <article
                 key={product.slug}
-                className="rounded-[2rem] border border-[var(--line)] bg-white p-6 md:p-8"
+                className="card-base p-6 md:p-8 bg-white"
               >
-                <div className="grid gap-6 md:grid-cols-[1.2fr_0.8fr]">
+                <div className="grid gap-8 md:grid-cols-[1.2fr_0.8fr]">
                   <div>
-                    <p className="text-sm uppercase tracking-[0.18em] text-[var(--accent)]">
+                    <span className="inline-block rounded-lg bg-[var(--accent-soft)] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--accent)]">
                       {product.category}
-                    </p>
-                    <h2 className="mt-3 text-3xl">
+                    </span>
+                    <h2 className="mt-4 text-2xl font-bold">
                       <Link
                         href={withLocalePath(locale, `/products/${product.slug}`)}
-                        className="transition hover:text-[var(--accent)]"
+                        className="hover:text-[var(--accent)] transition-colors"
                       >
                         {product.name}
                       </Link>
                     </h2>
-                    <p className="mt-4 text-base leading-8 text-[var(--muted)]">
+                    <p className="mt-3 text-sm leading-relaxed text-[var(--muted)]">
                       {product.description}
                     </p>
                   </div>
-                  <div className="space-y-3 text-sm leading-7 text-[var(--muted)]">
-                    <p>{dictionary.products.sku}: {product.sku}</p>
-                    <p>{dictionary.products.moq}: {product.moq}</p>
-                    <p>{dictionary.products.leadTime}: {product.leadTime}</p>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center p-3.5 bg-[var(--background)] rounded-xl">
+                      <span className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">{dictionary.products.sku}</span>
+                      <span className="text-sm font-bold">{product.sku}</span>
+                    </div>
+                    <div className="flex justify-between items-center p-3.5 bg-[var(--background)] rounded-xl">
+                      <span className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">{dictionary.products.moq}</span>
+                      <span className="text-sm font-bold">{product.moq}</span>
+                    </div>
+                    <div className="flex justify-between items-center p-3.5 bg-[var(--background)] rounded-xl">
+                      <span className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">{dictionary.products.leadTime}</span>
+                      <span className="text-sm font-bold">{product.leadTime}</span>
+                    </div>
                     <Link
                       href={withLocalePath(locale, `/products/${product.slug}`)}
-                      className="inline-flex pt-3 text-base font-medium text-[var(--foreground)] underline decoration-[var(--accent)] underline-offset-4"
+                      className="inline-flex items-center gap-2 pt-2 text-sm font-bold text-[var(--accent)] hover:gap-3 transition-all"
                     >
                       {dictionary.products.openDetail}
+                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                      </svg>
                     </Link>
                   </div>
                 </div>
               </article>
             ))}
             {products.length === 0 ? (
-              <article className="rounded-[2rem] border border-dashed border-[var(--line)] bg-white p-6 text-base leading-8 text-[var(--muted)]">
+              <article className="card-base p-8 text-center text-[var(--muted)]">
                 {dictionary.products.empty}
               </article>
             ) : null}

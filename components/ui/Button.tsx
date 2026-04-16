@@ -1,7 +1,7 @@
 import { cx } from "@/lib/utils";
 
-type ButtonVariant = "primary" | "secondary" | "outline" | "ghost";
-type ButtonSize = "sm" | "md" | "lg";
+type ButtonVariant = "primary" | "secondary" | "outline" | "ghost" | "gold";
+type ButtonSize = "sm" | "md" | "lg" | "xl";
 
 export function buttonStyles({
   variant = "primary",
@@ -13,18 +13,27 @@ export function buttonStyles({
   className?: string;
 }) {
   return cx(
-    "inline-flex items-center justify-center rounded-sm border text-center font-black uppercase tracking-widest transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] disabled:pointer-events-none disabled:opacity-60 disabled:grayscale",
+    // Base
+    "inline-flex items-center justify-center gap-2 rounded-lg font-semibold tracking-wide transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 whitespace-nowrap",
+
+    // Variants
     variant === "primary" &&
-      "border-[var(--accent)] bg-[var(--accent)] text-black shadow-[0_0_20px_rgba(249,115,22,0.3)] hover:shadow-[0_0_40px_rgba(249,115,22,0.5)] hover:-translate-y-1 active:translate-y-0 active:shadow-inner",
+      "bg-[var(--accent)] text-white shadow-md shadow-[var(--accent)]/20 hover:bg-[var(--accent-mid)] hover:-translate-y-px hover:shadow-lg hover:shadow-[var(--accent)]/25 focus-visible:ring-[var(--accent)]",
+    variant === "gold" &&
+      "bg-[var(--gold)] text-white shadow-md shadow-[var(--gold)]/25 hover:bg-[var(--gold-dark)] hover:-translate-y-px hover:shadow-lg hover:shadow-[var(--gold)]/30 focus-visible:ring-[var(--gold)]",
     variant === "secondary" &&
-      "border-white/10 bg-zinc-900 text-white hover:border-white/30 hover:bg-zinc-800 hover:-translate-y-1 active:translate-y-0",
+      "border border-[var(--line)] bg-white text-[var(--foreground)] shadow-sm shadow-black/[.04] hover:border-[rgba(15,42,82,.2)] hover:bg-[var(--surface-raised)] hover:-translate-y-px focus-visible:ring-[var(--accent)]",
     variant === "outline" &&
-      "border-white/20 bg-transparent text-white hover:border-[var(--accent)] hover:text-[var(--accent)] hover:-translate-y-1 active:translate-y-0",
+      "border border-[var(--accent)] bg-transparent text-[var(--accent)] hover:bg-[var(--accent-soft)] hover:-translate-y-px focus-visible:ring-[var(--accent)]",
     variant === "ghost" &&
-      "border-transparent bg-transparent text-white hover:bg-white/5",
-    size === "sm" && "min-h-10 px-4 text-[10px]",
-    size === "md" && "min-h-12 px-6 text-xs",
-    size === "lg" && "min-h-14 px-10 text-sm",
+      "bg-transparent text-[var(--muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)] focus-visible:ring-[var(--accent)]",
+
+    // Sizes
+    size === "sm"  && "h-9  px-4   text-xs",
+    size === "md"  && "h-11 px-5   text-sm",
+    size === "lg"  && "h-12 px-7   text-sm",
+    size === "xl"  && "h-14 px-9   text-base",
+
     className,
   );
 }

@@ -20,8 +20,13 @@ Object.defineProperty(globalThis, "TextDecoder", {
 jest.mock("next/image", () => ({
   __esModule: true,
   default: (props: { alt?: string } & Record<string, unknown>) => {
+    const rest = { ...props };
+
+    delete rest.priority;
+    delete rest.fill;
+
     return React.createElement("img", {
-      ...props,
+      ...rest,
       alt: props.alt ?? "",
     });
   },

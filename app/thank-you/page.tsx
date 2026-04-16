@@ -29,17 +29,22 @@ export default async function ThankYouPage() {
   return (
     <Section className="flex flex-1 items-center">
       <Container>
-        <div className="mx-auto max-w-3xl rounded-[2.5rem] border border-[var(--line)] bg-white p-8 text-center shadow-[0_24px_80px_rgba(15,23,42,0.06)] md:p-12">
-          <p className="text-sm font-medium uppercase tracking-[0.24em] text-[var(--accent)]">
+        <div className="mx-auto max-w-2xl text-center py-16">
+          <div className="mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-2xl bg-emerald-50">
+            <svg className="h-10 w-10 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <p className="eyebrow eyebrow-accent justify-center mb-4">
             {dictionary.thankYou.eyebrow}
           </p>
-          <h1 className="mt-4 text-4xl sm:text-5xl">
+          <h1 className="text-4xl font-black sm:text-5xl">
             {dictionary.thankYou.title}
           </h1>
-          <p className="mt-6 text-base leading-8 text-[var(--muted)] sm:text-lg">
+          <p className="mt-6 text-lg leading-relaxed text-[var(--muted)]">
             {dictionary.thankYou.description}
           </p>
-          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+          <div className="mt-10 flex flex-col justify-center gap-3 sm:flex-row">
             <Link className={buttonStyles({ variant: "primary", size: "lg" })} href={withLocalePath(locale, "/products")}>
               {dictionary.cta.viewProducts}
             </Link>

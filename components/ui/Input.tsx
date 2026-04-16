@@ -14,29 +14,30 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const inputId = id ?? generatedId;
 
     return (
-      <div className="w-full flex flex-col gap-2">
+      <div className="w-full flex flex-col gap-1.5">
         {label && (
           <label
             htmlFor={inputId}
-            className="text-sm font-medium text-[var(--foreground)]"
+            className="text-sm font-semibold text-[var(--foreground)]"
           >
             {label}
+            {props.required && <span className="ml-0.5 text-red-500">*</span>}
           </label>
         )}
         <input
           ref={ref}
           id={inputId}
           className={cx(
-            "min-h-12 w-full rounded-2xl border bg-white/88 px-4 py-3 text-base text-[var(--foreground)] placeholder:text-[var(--muted)] transition focus:outline-none focus:ring-2 focus:ring-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-50",
+            "min-h-12 w-full rounded-xl border bg-white px-4 py-3 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-light)] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/30 focus:border-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-50",
             error
-              ? "border-red-500 focus:ring-red-500"
-              : "border-[var(--line)] hover:border-[var(--foreground)]/30",
+              ? "border-red-400 focus:ring-red-500/20 focus:border-red-500"
+              : "border-[var(--line)] hover:border-slate-300",
             className,
           )}
           {...props}
         />
-        {hint && !error && <span className="text-sm text-[var(--muted)]">{hint}</span>}
-        {error && <span className="text-sm text-red-600">{error}</span>}
+        {hint && !error && <span className="text-xs text-[var(--muted)]">{hint}</span>}
+        {error && <span className="text-xs text-red-600">{error}</span>}
       </div>
     );
   }

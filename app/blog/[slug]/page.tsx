@@ -147,16 +147,16 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
         }
       />
 
-      <Section>
+      <Section className="bg-white py-24 lg:py-32">
         <Container>
-          <div className="grid gap-10 lg:grid-cols-[1fr_0.78fr]">
-            <article className="rounded-[2rem] border border-[var(--line)] bg-white p-6 md:p-8">
+          <div className="grid gap-12 lg:grid-cols-[1fr_0.78fr]">
+            <article className="rounded-2xl border border-[var(--line)] bg-white p-6 md:p-8 shadow-sm">
               <SectionHeading eyebrow={dictionary.blogDetail.articleEyebrow} title={dictionary.blogDetail.articleTitle} />
               <div className="mt-8">
                 {localizedPost.sections.length > 0 ? (
                   <ArticleSections sections={localizedPost.sections} />
                 ) : (
-                  <p className="text-base leading-8 text-[var(--muted)]">
+                  <p className="text-base leading-relaxed text-[var(--muted)]">
                     {dictionary.blogDetail.emptyArticle}
                   </p>
                 )}
@@ -164,7 +164,7 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
             </article>
 
             <aside className="space-y-6">
-              <div className="rounded-[2rem] border border-[var(--line)] bg-[var(--surface)] p-6">
+              <div className="rounded-2xl border border-[var(--line)] bg-[var(--background)] p-6 shadow-sm">
                 <SectionHeading
                   eyebrow={dictionary.blogDetail.nextEyebrow}
                   title={dictionary.blogDetail.nextTitle}
@@ -175,16 +175,16 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
                 </div>
               </div>
 
-              <div className="rounded-[2rem] border border-[var(--line)] bg-white p-6">
+              <div className="rounded-2xl border border-[var(--line)] bg-white p-6 shadow-sm">
                 <SectionHeading eyebrow={dictionary.blogDetail.relatedEyebrow} title={dictionary.blogDetail.relatedTitle} />
-                <div className="mt-6 space-y-4">
+                <div className="mt-6 space-y-5">
                   {relatedPosts.map((relatedPost) => (
-                    <article key={relatedPost.slug} className="border-t border-[var(--line)] pt-4">
-                      <p className="text-sm text-[var(--muted)]">{relatedPost.category}</p>
-                      <h2 className="mt-2 text-xl">
+                    <article key={relatedPost.slug} className="border-t border-slate-100 pt-5">
+                      <p className="text-xs font-semibold text-[var(--muted)]">{relatedPost.category}</p>
+                      <h2 className="mt-2 text-lg font-bold">
                         <Link
                           href={withLocalePath(locale, `/blog/${relatedPost.slug}`)}
-                          className="transition hover:text-[var(--accent)]"
+                          className="hover:text-[var(--accent)] transition-colors"
                         >
                           {relatedPost.title}
                         </Link>
@@ -192,7 +192,7 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
                     </article>
                   ))}
                   {relatedPosts.length === 0 ? (
-                    <p className="text-base leading-8 text-[var(--muted)]">
+                    <p className="text-sm text-[var(--muted)]">
                       {dictionary.blogDetail.emptyRelated}
                     </p>
                   ) : null}

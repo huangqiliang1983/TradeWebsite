@@ -284,7 +284,7 @@ const englishDictionary: MarketingDictionary = {
   },
   home: {
     heroTitle:
-      "Industrial sourcing pages that read clearly, rank cleanly, and convert qualified buyers.",
+      "Industrial sourcing pages",
     whyEyebrow: "Why It Converts",
     whyTitle:
       "The homepage is organized to answer buyer questions in the order they usually appear.",

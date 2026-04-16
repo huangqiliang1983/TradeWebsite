@@ -28,126 +28,141 @@ export function Header({ company }: { company: PublishedCompanyProfile }) {
   const locale = getLocaleFromPathname(pathname);
   const dictionary = getMarketingDictionary(locale);
   const homeHref = withLocalePath(locale, "/");
-  const initials = getBrandInitials(company.companyName) || "B2";
+  const initials = getBrandInitials(company.companyName) || "MFG";
   const hasUploadedLogo = company.logoImage && !company.logoImage.startsWith("/brand/");
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-black/80 backdrop-blur-xl shadow-2xl">
+    <header className="sticky top-0 z-50 border-b border-[var(--line)] bg-white/96 shadow-[0_1px_8px_rgba(13,17,23,.06)] backdrop-blur-md">
       <Container>
-        <div className="flex min-h-18 items-center justify-between gap-3 py-3.5">
+        <div className="flex h-[72px] items-center justify-between gap-4">
+
+          {/* ── Logo ── */}
           <Link
             href={homeHref}
-            className="group flex min-w-0 items-center gap-3 text-[var(--foreground)]"
+            className="group flex min-w-0 items-center gap-3"
             onClick={() => setIsOpen(false)}
           >
-            <span className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-md border border-white/20 bg-zinc-900 text-sm font-black uppercase tracking-[0.18em] text-[var(--accent)] transition group-hover:border-[var(--accent)] group-hover:-translate-y-0.5">
+            <span className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[var(--accent)] text-xs font-black uppercase tracking-wider text-white shadow-md shadow-[var(--accent)]/25 transition-all group-hover:shadow-lg group-hover:shadow-[var(--accent)]/35 group-hover:-translate-y-px">
               {hasUploadedLogo ? (
                 <Image
                   src={company.logoImage}
                   alt={company.logoImageAlt}
                   fill
-                  sizes="44px"
+                  sizes="40px"
                   className="object-cover"
                 />
               ) : (
                 initials
               )}
             </span>
-            <span className="block truncate font-heading text-lg leading-none tracking-[-0.04em] sm:text-xl text-white">
+            <span className="block truncate text-[17px] font-bold tracking-tight text-[var(--foreground)]">
               {company.companyName}
             </span>
           </Link>
 
-          <nav className="hidden items-center gap-1 rounded-sm border border-white/10 bg-zinc-900/50 p-1 lg:flex" aria-label="Primary">
+          {/* ── Desktop Nav ── */}
+          <nav className="hidden items-center gap-0.5 lg:flex" aria-label="Primary">
             {dictionary.navigation.map((item) => {
               const href = withLocalePath(locale, item.href);
-
+              const isActive = pathname === href || pathname.startsWith(href + "/");
               return (
-              <Link
-                key={href}
-                href={href}
-                className={cx(
-                  "rounded-full px-4 py-2 text-sm font-semibold transition",
-                  pathname === href
-                    ? "bg-[var(--accent)] text-black font-black"
-                    : "text-zinc-400 hover:text-white hover:bg-white/5",
-                )}
-                aria-current={pathname === href ? "page" : undefined}
-              >
-                {item.label}
-              </Link>
+                <Link
+                  key={href}
+                  href={href}
+                  className={cx(
+                    "relative rounded-md px-4 py-2 text-sm font-medium transition-colors",
+                    isActive
+                      ? "text-[var(--accent)]"
+                      : "text-[var(--muted)] hover:text-[var(--foreground)]",
+                  )}
+                  aria-current={isActive ? "page" : undefined}
+                >
+                  {item.label}
+                  {isActive && (
+                    <span className="absolute bottom-0 left-1/2 h-px w-4 -translate-x-1/2 rounded-full bg-[var(--gold)]" />
+                  )}
+                </Link>
               );
             })}
           </nav>
 
-          <div className="flex items-center gap-3">
-            <LanguageSwitch className="max-w-[44vw] sm:max-w-none" onNavigate={() => setIsOpen(false)} />
+          {/* ── Right actions ── */}
+          <div className="flex items-center gap-2.5">
+            <LanguageSwitch className="hidden sm:inline-flex" onNavigate={() => setIsOpen(false)} />
+
             <div className="hidden lg:block">
               <Link
-                className={buttonStyles({ variant: "primary", size: "md", className: "font-black uppercase tracking-widest text-xs" })}
+                className={buttonStyles({ variant: "gold", size: "md" })}
                 href={`${withLocalePath(locale, "/contact")}#quote`}
               >
                 {dictionary.cta.requestQuote}
+                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
               </Link>
             </div>
-          </div>
 
-          <button
-            type="button"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-white/10 bg-zinc-900/70 text-white lg:hidden"
-            aria-expanded={isOpen}
-            aria-controls="mobile-navigation"
-            aria-label="Toggle navigation menu"
-            onClick={() => setIsOpen((current) => !current)}
-          >
-            <span className="space-y-1.5">
-              <span className="block h-0.5 w-5 bg-current" />
-              <span className="block h-0.5 w-5 bg-current" />
-              <span className="block h-0.5 w-5 bg-current" />
-            </span>
-          </button>
+            {/* Hamburger */}
+            <button
+              type="button"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-[var(--muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)] transition-colors lg:hidden"
+              aria-expanded={isOpen}
+              aria-controls="mobile-nav"
+              aria-label="Toggle menu"
+              onClick={() => setIsOpen(!isOpen)}
+            >
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                {isOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
+          </div>
         </div>
       </Container>
 
-      <div
-        id="mobile-navigation"
-        className={cx(
-          "overflow-hidden border-t border-white/10 bg-zinc-950 transition-[max-height] duration-300 lg:hidden",
-          isOpen ? "max-h-96" : "max-h-0",
-        )}
-      >
-        <Container className="py-4">
-          <nav className="flex flex-col gap-2" aria-label="Mobile primary">
-            {dictionary.navigation.map((item) => {
-              const href = withLocalePath(locale, item.href);
+      {/* ── Mobile Menu ── */}
+      {isOpen && (
+        <div id="mobile-nav" className="border-t border-[var(--line)] bg-white lg:hidden">
+          <Container>
+            <nav className="flex flex-col py-4 gap-1" aria-label="Mobile">
+              {dictionary.navigation.map((item) => {
+                const href = withLocalePath(locale, item.href);
+                const isActive = pathname === href || pathname.startsWith(href + "/");
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    className={cx(
+                      "rounded-lg px-4 py-3 text-base font-medium transition-colors",
+                      isActive
+                        ? "bg-[var(--accent-soft)] text-[var(--accent)]"
+                        : "text-[var(--muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]",
+                    )}
+                    aria-current={isActive ? "page" : undefined}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
 
-              return (
-              <Link
-                key={href}
-                href={href}
-                className={cx(
-                  "rounded-md px-4 py-3 text-sm font-bold uppercase tracking-wider transition",
-                  pathname === href
-                    ? "bg-[var(--accent)] text-black"
-                    : "bg-zinc-900 text-white hover:bg-zinc-800",
-                )}
-                aria-current={pathname === href ? "page" : undefined}
-                onClick={() => setIsOpen(false)}
-              >
-                {item.label}
-              </Link>
-              );
-            })}
-            <Link
-              className={buttonStyles({ variant: "primary", size: "md", className: "mt-2 font-black uppercase tracking-widest text-xs" })}
-              href={`${withLocalePath(locale, "/contact")}#quote`}
-              onClick={() => setIsOpen(false)}
-            >
-              {dictionary.cta.requestQuote}
-            </Link>
-          </nav>
-        </Container>
-      </div>
+              <div className="mt-4 flex flex-col gap-3 border-t border-[var(--line)] pt-4 px-4">
+                <LanguageSwitch onNavigate={() => setIsOpen(false)} />
+                <Link
+                  className={buttonStyles({ variant: "gold", size: "md", className: "w-full justify-center" })}
+                  href={`${withLocalePath(locale, "/contact")}#quote`}
+                  onClick={() => setIsOpen(false)}
+                >
+                  {dictionary.cta.requestQuote}
+                </Link>
+              </div>
+            </nav>
+          </Container>
+        </div>
+      )}
     </header>
   );
 }

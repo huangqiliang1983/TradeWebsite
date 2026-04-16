@@ -1,108 +1,175 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fafaf9; /* stone-50 */
-  --surface: #ffffff;
-  --surface-strong: #f5f5f4; /* stone-100 */
-  --foreground: #18181b; /* zinc-900 */
-  --muted: #52525b; /* zinc-600 */
-  --line: #e7e5e4; /* stone-200 */
-  --accent: #ea580c; /* orange-600 */
-  --accent-dark: #c2410c; /* orange-700 */
-  --accent-soft: #ffedd5; /* orange-50 */
-  --charcoal: #09090b; /* zinc-950 */
-  --font-body: "Aptos", "Source Sans 3", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-  --font-heading: "Iowan Old Style", "Newsreader", Georgia, "Times New Roman", serif;
+  /* ── Core Palette ── */
+  --background:     #f7f8fa;
+  --surface:        #ffffff;
+  --surface-raised: #f0f2f6;
+  --foreground:     #0d1117;
+  --muted:          #5a6478;
+  --muted-light:    #8a9ab5;
+  --line:           #dde3ed;
+
+  /* ── Brand: Deep Navy ── */
+  --accent:         #0f2a52;
+  --accent-mid:     #1a3d72;
+  --accent-light:   #1d4ed8;
+  --accent-soft:    #eef2fb;
+
+  /* ── Brand: Premium Gold ── */
+  --gold:           #c8962a;
+  --gold-dark:      #a87820;
+  --gold-light:     #e8b44a;
+  --gold-soft:      #fef8ee;
+
+  /* ── Charcoal (dark sections) ── */
+  --charcoal:       #0d1117;
+  --charcoal-mid:   #161c28;
+  --charcoal-soft:  #1e2638;
+
+  /* ── Typography ── */
+  --font-body:    "Inter", "Source Sans 3", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-heading: "Inter", "Source Sans 3", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+
+  /* ── Elevation ── */
+  --shadow-xs: 0 1px 2px rgba(13,17,23,.04);
+  --shadow-sm: 0 1px 3px rgba(13,17,23,.07), 0 1px 2px rgba(13,17,23,.04);
+  --shadow-md: 0 4px 12px rgba(13,17,23,.08), 0 2px 4px rgba(13,17,23,.05);
+  --shadow-lg: 0 12px 32px rgba(13,17,23,.1),  0 4px 8px rgba(13,17,23,.06);
+  --shadow-xl: 0 24px 60px rgba(13,17,23,.12), 0 8px 16px rgba(13,17,23,.07);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-heading: var(--font-heading);
+  --font-heading:     var(--font-heading);
 
   @keyframes rise {
-    from {
-      opacity: 0;
-      transform: translateY(18px);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0);    }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
   }
 }
 
+/* ═══════════════════ BASE ═══════════════════ */
 @layer base {
-  html {
-    scroll-behavior: smooth;
-  }
+  html { scroll-behavior: smooth; }
 
   body {
     font-family: var(--font-body);
     background-color: var(--background);
     color: var(--foreground);
     text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.6;
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6,
-  .font-heading {
+  h1, h2, h3, h4, h5, h6, .font-heading {
     font-family: var(--font-heading);
     color: var(--foreground);
-    letter-spacing: -0.045em;
+    letter-spacing: -0.022em;
+    font-weight: 800;
+    line-height: 1.18;
   }
 
-  p {
-    text-wrap: pretty;
-  }
+  p { text-wrap: pretty; line-height: 1.78; }
 
-  * {
-    border-color: var(--line);
-  }
+  * { border-color: var(--line); }
 
   ::selection {
-    background: rgba(234, 88, 12, 0.2);
-    color: var(--foreground);
+    background: rgba(200,150,42,.18);
+    color: var(--gold-dark);
   }
 
-  a,
-  button,
-  summary {
-    -webkit-tap-highlight-color: transparent;
-  }
+  a, button, summary { -webkit-tap-highlight-color: transparent; }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #c8d0de; border-radius: 6px; }
+  ::-webkit-scrollbar-thumb:hover { background: #9aa5bb; }
 }
 
+/* ═══════════════════ UTILITIES ═══════════════════ */
 @layer utilities {
+
+  /* Subtle dot-grid texture for dark sections */
+  .texture-dots {
+    background-image: radial-gradient(circle, rgba(255,255,255,.06) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  /* Faint line-grid for light sections */
   .texture-grid {
     background-image:
-      linear-gradient(rgba(24, 24, 27, 0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(24, 24, 27, 0.04) 1px, transparent 1px);
-    background-size: 32px 32px;
+      linear-gradient(rgba(13,17,23,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(13,17,23,.04) 1px, transparent 1px);
+    background-size: 48px 48px;
   }
 
-  .texture-grid-dark {
-    background-image:
-      linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-    background-size: 32px 32px;
+  /* ── Cards ── */
+  .card {
+    background: var(--surface);
+    border-radius: 20px;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow .25s ease, transform .25s ease, border-color .25s ease;
+  }
+  .card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-3px);
+    border-color: rgba(15,42,82,.12);
   }
 
-  .industrial-border {
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: linear-gradient(145deg, rgba(24, 24, 27, 0.4), rgba(9, 9, 11, 0.4));
-    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  .card-dark {
+    background: rgba(255,255,255,.04);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,.1);
+    transition: border-color .25s ease, background .25s ease;
+  }
+  .card-dark:hover {
+    border-color: rgba(200,150,42,.35);
+    background: rgba(255,255,255,.07);
   }
 
-  .soft-panel {
-    box-shadow: 0 12px 48px -12px rgba(24, 24, 27, 0.1);
+  /* ── Eyebrow labels ── */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+  }
+  .eyebrow-accent { color: var(--accent-light); }
+  .eyebrow-gold   { color: var(--gold); }
+  .eyebrow-white  { color: rgba(255,255,255,.65); }
+
+  /* ── Stat numbers ── */
+  .stat-number {
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    line-height: 1;
   }
 
-  .orange-glow {
-    box-shadow: 0 0 30px rgba(249, 115, 22, 0.15);
+  /* ── Gold divider line ── */
+  .divider-gold {
+    display: block;
+    width: 48px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    border-radius: 2px;
+  }
+
+  /* ── Section top stripe ── */
+  .stripe-gold {
+    border-top: 3px solid;
+    border-image: linear-gradient(90deg, var(--gold), var(--gold-light) 60%, transparent) 1;
   }
 }

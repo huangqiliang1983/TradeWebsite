@@ -79,35 +79,43 @@ export default async function IndustriesPage() {
         }
       />
 
-      <Section>
+      <Section className="bg-white py-24 lg:py-32">
         <Container>
           <SectionHeading
             eyebrow={dictionary.industries.listEyebrow}
             title={dictionary.industries.listTitle}
           />
-          <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {industries.map((industry) => (
               <article
                 key={industry.slug}
-                className="rounded-[2rem] border border-[var(--line)] bg-white p-6"
+                className="card-base p-8 bg-white"
               >
-                <p className="text-sm uppercase tracking-[0.18em] text-[var(--accent)]">
+                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--gold-soft)] text-[var(--gold)]">
+                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                  </svg>
+                </div>
+                <p className="text-xs font-bold uppercase tracking-[0.15em] text-[var(--accent)] mb-2">
                   {industry.name}
                 </p>
-                <h2 className="mt-3 text-2xl">{industry.heroTitle}</h2>
-                <p className="mt-4 text-base leading-8 text-[var(--muted)]">
+                <h2 className="text-xl font-bold leading-snug">{industry.heroTitle}</h2>
+                <p className="mt-3 text-sm leading-relaxed text-[var(--muted)]">
                   {industry.summary}
                 </p>
                 <Link
                   href={withLocalePath(locale, `/industries/${industry.slug}`)}
-                  className="mt-6 inline-flex text-base font-medium text-[var(--foreground)] underline decoration-[var(--accent)] underline-offset-4"
+                  className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-[var(--accent)] hover:gap-3 transition-all"
                 >
                   {dictionary.industries.open}
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
                 </Link>
               </article>
             ))}
             {industries.length === 0 ? (
-              <article className="rounded-[2rem] border border-dashed border-[var(--line)] bg-white p-6 text-base leading-8 text-[var(--muted)] md:col-span-2 xl:col-span-3">
+              <article className="card-base p-8 text-center text-[var(--muted)] md:col-span-2 xl:col-span-3">
                 {dictionary.industries.empty}
               </article>
             ) : null}

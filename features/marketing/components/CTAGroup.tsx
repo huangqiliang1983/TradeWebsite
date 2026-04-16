@@ -25,15 +25,14 @@ export async function CTAGroup({
 }: CTAGroupProps) {
   const company = await getPublishedCompanyProfile(locale);
   const dictionary = getMarketingDictionary(locale);
-  const isAccentPanel = tone === "dark";
+  const isDark = tone === "dark";
 
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
       <Link
         className={buttonStyles({
-          variant: "primary",
+          variant: isDark ? "gold" : "gold",
           size: "lg",
-          className: isAccentPanel ? "border-black bg-black text-white hover:shadow-none" : "",
         })}
         href={primaryHref ?? `${withLocalePath(locale, "/contact")}#quote`}
       >
@@ -43,8 +42,8 @@ export async function CTAGroup({
         className={buttonStyles({
           variant: "secondary",
           size: "lg",
-          className: isAccentPanel
-            ? "border-black/25 bg-transparent text-black hover:border-black hover:bg-black hover:text-white"
+          className: isDark
+            ? "border-white/15 bg-white/5 text-white hover:border-white/25 hover:bg-white/10"
             : "",
         })}
         href={secondaryHref ?? withLocalePath(locale, "/contact")}
@@ -54,12 +53,10 @@ export async function CTAGroup({
       <Link
         className={buttonStyles({
           variant: "ghost",
-          size: "lg",
+          size: "md",
           className:
-            "justify-start text-[10px] font-black uppercase tracking-widest sm:justify-center " +
-            (isAccentPanel
-              ? "text-black/70 hover:bg-black/10 hover:text-black"
-              : "text-[var(--foreground)] hover:bg-[var(--surface-strong)]"),
+            "justify-start text-xs font-medium sm:justify-center " +
+            (isDark ? "text-slate-400 hover:bg-white/8 hover:text-white" : ""),
         })}
         href={company.whatsapp}
         target="_blank"
@@ -70,12 +67,10 @@ export async function CTAGroup({
       <Link
         className={buttonStyles({
           variant: "ghost",
-          size: "lg",
+          size: "md",
           className:
-            "justify-start text-[10px] font-black uppercase tracking-widest sm:justify-center " +
-            (isAccentPanel
-              ? "text-black/70 hover:bg-black/10 hover:text-black"
-              : "text-[var(--foreground)] hover:bg-[var(--surface-strong)]"),
+            "justify-start text-xs font-medium sm:justify-center " +
+            (isDark ? "text-slate-400 hover:bg-white/8 hover:text-white" : ""),
         })}
         href={`mailto:${company.email}`}
       >
